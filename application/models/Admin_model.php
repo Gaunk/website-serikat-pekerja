@@ -182,6 +182,33 @@ public function update_biodata_no_kta($user_id, $data) {
 }
 
 
+// BLOCK MODEL BERITA
+// Ambil semua berita
+public function get_all_berita() {
+    return $this->db->get('berita')->result_array();
+}
+
+// Ambil berita berdasarkan ID
+public function get_berita_by_id($id) {
+    return $this->db->get_where('berita', ['id' => $id])->row_array();
+}
+
+// Menyimpan berita baru
+public function insert_berita($data) {
+    return $this->db->insert('berita', $data);
+}
+
+// Update berita
+public function update_berita($id, $data) {
+    $this->db->where('id', $id);
+    return $this->db->update('berita', $data);
+}
+
+// Hapus berita
+public function delete_berita($id) {
+    $this->db->where('id', $id);
+    return $this->db->delete('berita');
+}
 
 
 

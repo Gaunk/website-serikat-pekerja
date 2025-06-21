@@ -39,12 +39,10 @@
                                 <div class="card">
                                     <h5 class="card-header">Biodata Serikat Pekerja</h5>
                                     <div class="card-body">
-                                        <button id="btnTambahPengguna" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalTambahPengguna">
-                                            <i class="fas fa-plus"></i> Tambah Pengguna
+                                        <!-- Button to Open Modal for Adding New Berita with Icon -->
+                                        <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#tambahModal">
+                                            <i class="fas fa-plus"></i> Tambah Berita
                                         </button>
-
-
-
                                         <div class="table-responsive">
                                              <table id="example" class="table table-striped table-bordered second" style="width:100%">
                                                 <thead>

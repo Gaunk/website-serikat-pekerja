@@ -248,15 +248,6 @@ class Admin extends CI_Controller {
     redirect('admin/pengguna');
 }
 
-
-
-
-
-
-
-
-
-
 public function hapus_pengguna($id) {
     // Cek apakah user dengan ID tersebut ada
     $user = $this->Admin_model->get_user_by_id($id);
@@ -401,6 +392,173 @@ public function hapus_pengguna($id) {
     redirect('admin/pengguna');
 }
 
+// BLOCK BERITAAAAAAAAAAAAA LIEURCODING AHK
+public function berita() {
+    // Ambil semua berita dari model
+    $berita = $this->Admin_model->get_all_berita();
+
+    $data = [
+        'judul' => 'Admin - Daftar Berita',
+        'berita' => $berita, // Pass berita ke view
+        'username' => $this->session->userdata('username'),
+    ];
+
+    $this->load->view('berita/head', $data);
+    $this->load->view('berita/header', $data);
+    $this->load->view('berita/dashboard', $data); // Pastikan ada view `berita/berita.php`
+    $this->load->view('berita/footer');
+}
+
+public function tambah_berita() {
+    // Cek apakah ada data POST yang dikirim
+    if ($_POST) {
+        $judul = $this->input->post('judul', true);
+        $konten = $this->input->post('konten', true);
+        
+        // Buat slug dari judul
+        $slug = url_title($judul, 'dash', true);
+
+        // Proses upload gambar jika ada
+        $image = '';
+        if (!empty($_FILES['image']['name'])) {
+            $config['upload_path']   = './temp_admin/assets/berita/';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['max_size']      = 2048;
+            $config['file_name']     = time() . '_' . $_FILES['image']['name'];
+
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('image')) {
+                $upload_data = $this->upload->data();
+                $image = 'temp_admin/assets/berita/' . $upload_data['file_name'];
+            } else {
+                $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
+                redirect('admin/berita/tambah');
+            }
+        }
+
+        // Data yang akan disimpan ke database
+        $data = [
+            'judul' => $judul,
+            'slug' => $slug,
+            'konten' => $konten,
+            'image' => $image
+        ];
+
+        // Simpan berita ke database
+        $insert = $this->Admin_model->insert_berita($data);
+
+        if ($insert) {
+            $this->session->set_flashdata('success', 'Berita berhasil ditambahkan.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menambahkan berita.');
+        }
+
+        redirect('admin/berita');
+    }
+
+    // Jika belum ada POST data, tampilkan form tambah berita
+    $data['judul'] = 'Tambah Berita';
+    $this->load->view('berita/head', $data);
+    $this->load->view('berita/header', $data);
+    $this->load->view('berita/tambah_berita', $data); // Pastikan ada view `berita/tambah_berita.php`
+    $this->load->view('berita/footer');
+}
+
+public function edit_berita($id) {
+    // Ambil data berita berdasarkan ID
+    $berita = $this->Admin_model->get_berita_by_id($id);
+    if (!$berita) {
+        $this->session->set_flashdata('error', 'Berita tidak ditemukan.');
+        redirect('admin/berita');
+    }
+
+    // Jika ada data POST (saat form disubmit)
+    if ($_POST) {
+        $judul = $this->input->post('judul', true);
+        $konten = $this->input->post('konten', true);
+        $slug = url_title($judul, 'dash', true);
+
+        // Proses upload gambar jika ada
+        $image = $berita['image']; // Gunakan gambar lama jika tidak ada gambar baru
+        if (!empty($_FILES['image']['name'])) {
+            $config['upload_path']   = './temp_admin/assets/berita/';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['max_size']      = 2048;
+            $config['file_name']     = time() . '_' . $_FILES['image']['name'];
+
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('image')) {
+                $upload_data = $this->upload->data();
+                $image = 'temp_admin/assets/berita/' . $upload_data['file_name'];
+
+                // Hapus gambar lama jika ada
+                if ($berita['image'] && file_exists('./' . $berita['image'])) {
+                    unlink('./' . $berita['image']);
+                }
+            } else {
+                $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
+                redirect('admin/berita/edit/' . $id);
+            }
+        }
+
+        // Data yang akan diperbarui
+        $data = [
+            'judul' => $judul,
+            'slug' => $slug,
+            'konten' => $konten,
+            'image' => $image
+        ];
+
+        // Update berita di database
+        $update = $this->Admin_model->update_berita($id, $data);
+
+        if ($update) {
+            $this->session->set_flashdata('success', 'Berita berhasil diperbarui.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal memperbarui berita.');
+        }
+
+        redirect('admin/berita');
+    }
+
+    // Jika tidak ada data POST, tampilkan form edit
+    $data = [
+        'judul' => 'Edit Berita',
+        'berita' => $berita,
+    ];
+
+    $this->load->view('berita/head', $data);
+    $this->load->view('berita/header', $data);
+    $this->load->view('berita/edit_berita', $data); // Pastikan ada view `berita/edit_berita.php`
+    $this->load->view('berita/footer');
+}
+
+public function hapus_berita($id) {
+    // Ambil data berita berdasarkan ID
+    $berita = $this->Admin_model->get_berita_by_id($id);
+    if (!$berita) {
+        $this->session->set_flashdata('error', 'Berita tidak ditemukan.');
+        redirect('admin/berita');
+    }
+
+    // Hapus gambar jika ada
+    if ($berita['image'] && file_exists('./' . $berita['image'])) {
+        unlink('./' . $berita['image']);
+    }
+
+    // Hapus berita dari database
+    $delete = $this->Admin_model->delete_berita($id);
+
+    if ($delete) {
+        $this->session->set_flashdata('success', 'Berita berhasil dihapus.');
+    } else {
+        $this->session->set_flashdata('error', 'Gagal menghapus berita.');
+    }
+
+    redirect('admin/berita');
+}
 
 
 
