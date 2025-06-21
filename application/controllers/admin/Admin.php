@@ -467,6 +467,7 @@ public function tambah_berita() {
 
 public function edit_berita($id) {
     // Ambil data berita berdasarkan ID
+    
     $berita = $this->Admin_model->get_berita_by_id($id);
     if (!$berita) {
         $this->session->set_flashdata('error', 'Berita tidak ditemukan.');
@@ -525,7 +526,7 @@ public function edit_berita($id) {
 
     // Jika tidak ada data POST, tampilkan form edit
     $data = [
-        'judul' => 'Edit Berita',
+        'judul' => 'Admin - Edit Berita',
         'berita' => $berita,
     ];
 

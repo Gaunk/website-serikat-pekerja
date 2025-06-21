@@ -87,9 +87,9 @@ table td {
 
                                                                 <td>
                                                                 <!-- Edit Button with Icon -->
-                                                                <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal<?= $b['id'] ?>">
+                                                                <a href="<?= base_url('admin/edit_berita/' . $b['id']) ?>" class="btn btn-success btn-sm">
                                                                     <i class="fas fa-edit"></i> Edit
-                                                                </button>
+                                                                </a>
 
                                                                 <!-- Delete Button with Icon -->
                                                                 <a href="<?= base_url('admin/hapus_berita/' . $b['id']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin?')">
@@ -98,52 +98,6 @@ table td {
                                                             </td>
 
                                                             </tr>
-
-                                                            <!-- Modal for Edit Berita -->
-                                                            <div class="modal fade" id="editModal<?= $b['id'] ?>" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-                                                                <div class="modal-dialog" role="document">
-                                                                    <div class="modal-content">
-                                                                        <div class="modal-header">
-                                                                            <h5 class="modal-title" id="editModalLabel">Edit Berita</h5>
-                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                                <span aria-hidden="true">&times;</span>
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="modal-body">
-                                                                            <form action="<?= base_url('admin/edit_berita/' . $b['id']) ?>" method="POST" enctype="multipart/form-data">
-                                                                                <div class="form-group">
-                                                                                    <label for="judul">Judul</label>
-                                                                                    <input type="text" class="form-control" id="judul" name="judul" value="<?= $b['judul'] ?>" required>
-                                                                                </div>
-                                                                                <div class="form-group">
-                                                                                <label for="image">Gambar Berita</label>
-                                                                                <!-- Custom file input wrapper -->
-                                                                                <div class="custom-file">
-                                                                                    <input type="file" class="custom-file-input" id="image" name="image" accept="image/*" onchange="previewImage(event)">
-                                                                                    <label class="custom-file-label" for="image">Pilih Gambar</label>
-                                                                                </div>
-                                                                                
-                                                                                <!-- Current image display -->
-                                                                                <?php if ($b['image']): ?>
-                                                                                    <p><strong>Gambar saat ini:</strong></p>
-                                                                                    <img id="current-image" src="<?= base_url($b['image']) ?>" alt="Gambar Berita" class="img-fluid rounded" style="max-width: 100%; max-height: 250px;">
-                                                                                <?php else: ?>
-                                                                                    <p>Belum ada gambar.</p>
-                                                                                <?php endif; ?>
-
-                                                                                <!-- Preview of the selected image (shown only after selecting a new image) -->
-                                                                                <div id="image-preview-container" class="mt-3" style="display: none;">
-                                                                                    <p><strong>Gambar yang dipilih:</strong></p>
-                                                                                    <img id="image-preview" src="" alt="Gambar Berita" class="img-fluid rounded" style="max-width: 100%; max-height: 250px;">
-                                                                                </div>
-                                                                            </div>
-
-                                                                               <button type="submit" class="btn btn-primary">Simpan</button>
-                                                                            </form>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
 
                                                         <?php endforeach; ?>
                                                     </tbody>
@@ -193,6 +147,12 @@ table td {
                         </div>
                     </div>
 
+                    <!-- Display existing image in edit mode -->
+                    <div id="existing-image" class="existing-image" style="display: none;">
+                        <img src="" alt="Existing Image" style="max-width: 100%; margin-top: 10px;">
+                        <p>Gambar sebelumnya</p>
+                    </div>
+
                     <button type="submit" class="btn btn-primary">Simpan</button>
                 </form>
             </div>
@@ -200,25 +160,3 @@ table td {
     </div>
 </div>
 
-
-<script>
-    
-    function previewImage(event) {
-        var reader = new FileReader();
-        var file = event.target.files[0];
-
-        reader.onload = function() {
-            // Set the image source to the uploaded image
-            var imagePreview = document.getElementById('image-preview');
-            imagePreview.src = reader.result;
-
-            // Show the preview container
-            document.getElementById('image-preview-container').style.display = 'block';
-
-            // Optionally, hide the current image if a new one is selected
-            document.getElementById('current-image').style.display = 'none';
-        };
-
-        reader.readAsDataURL(file);
-    }
-</script>
