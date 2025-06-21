@@ -5,6 +5,7 @@ class Auth extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
+        $this->load->model('Admin_model');  // Assuming User_model is your model
         $this->load->model('User_model');  // Assuming User_model is your model
         $this->load->library('session');
         $this->load->helper(['url', 'form']);

@@ -35,7 +35,7 @@
                                     <div class="card-body">
                                         <h5 class="text-muted">Total Anggota</h5>
                                         <div class="metric-value d-inline-block">
-                                            <h1 class="mb-1">10000</h1>
+                                            <h1 class="mb-1"><?= $total_users; ?></h1>
                                         </div>
                                         <div class="metric-label d-inline-block float-right text-success font-weight-bold">
                                             <span><i class="fa fa-fw fa-arrow-up"></i></span><span>5.86%</span>
@@ -47,9 +47,11 @@
                             <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h5 class="text-muted">Total Akun</h5>
+                                        <h5 class="text-muted">Aktif</h5>
                                         <div class="metric-value d-inline-block">
-                                            <h1 class="mb-1">12099</h1>
+                                            <?php if ($active_users > 0): ?>                                                
+                                            <h1 class="mb-1"><?= $active_users; ?></h1>
+                                            <?php endif; ?>
                                         </div>
                                         <div class="metric-label d-inline-block float-right text-success font-weight-bold">
                                             <span><i class="fa fa-fw fa-arrow-up"></i></span><span>5.86%</span>
@@ -63,7 +65,9 @@
                                     <div class="card-body">
                                         <h5 class="text-muted">Tidak Aktif</h5>
                                         <div class="metric-value d-inline-block">
-                                            <h1 class="mb-1">0.00</h1>
+                                            <?php if ($blocked_users > 0): ?>
+                                                <h1 class="mb-1"><?= $blocked_users; ?></h1>
+                                            <?php endif; ?>
                                         </div>
                                         <div class="metric-label d-inline-block float-right text-primary font-weight-bold">
                                             <span>N/A</span>

@@ -28,65 +28,6 @@
                     <!-- end pageheader  -->
                     <!-- ============================================================== -->
                     <div class="ecommerce-widget">
-
-                        <div class="row">
-                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="text-muted">Total Anggota</h5>
-                                        <div class="metric-value d-inline-block">
-                                            <h1 class="mb-1">10000</h1>
-                                        </div>
-                                        <div class="metric-label d-inline-block float-right text-success font-weight-bold">
-                                            <span><i class="fa fa-fw fa-arrow-up"></i></span><span>5.86%</span>
-                                        </div>
-                                    </div>
-                                    <div id="sparkline-revenue"></div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="text-muted">Total Akun</h5>
-                                        <div class="metric-value d-inline-block">
-                                            <h1 class="mb-1">12099</h1>
-                                        </div>
-                                        <div class="metric-label d-inline-block float-right text-success font-weight-bold">
-                                            <span><i class="fa fa-fw fa-arrow-up"></i></span><span>5.86%</span>
-                                        </div>
-                                    </div>
-                                    <div id="sparkline-revenue2"></div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="text-muted">Tidak Aktif</h5>
-                                        <div class="metric-value d-inline-block">
-                                            <h1 class="mb-1">0.00</h1>
-                                        </div>
-                                        <div class="metric-label d-inline-block float-right text-primary font-weight-bold">
-                                            <span>N/A</span>
-                                        </div>
-                                    </div>
-                                    <div id="sparkline-revenue3"></div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="text-muted">Kas</h5>
-                                        <div class="metric-value d-inline-block">
-                                            <h1 class="mb-1">28000</h1>
-                                        </div>
-                                        <div class="metric-label d-inline-block float-right text-secondary font-weight-bold">
-                                            <span>-2.00%</span>
-                                        </div>
-                                    </div>
-                                    <div id="sparkline-revenue4"></div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="row">
                             <!-- ============================================================== -->
                       
@@ -113,8 +54,8 @@
                                                         <th>Email</th>
                                                         <th>Role</th>
                                                         <th>Avatar</th>
+                                                        <th>Username</th>
                                                         <th>Status Keanggotaan</th>
-                                                        <th>Username Akun</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -136,6 +77,8 @@
                                                                         <span class="text-muted">-</span>
                                                                     <?php endif; ?>
                                                                 </td>
+                                                                        
+                                                                <td><?= htmlspecialchars($user['username'] ?? '-') ?></td>
                                                                 <td class="text-right">
                                                                 <?php if ($user['status_keanggotaan'] == 'Aktif'): ?>
                                                                     <span class="badge badge-pill badge-success" style="font-size: 0.9rem; padding: 6px 12px;">
@@ -146,8 +89,7 @@
                                                                             <i class="fas fa-times-circle mr-1"></i> Tidak Aktif
                                                                         </span>
                                                                     <?php endif; ?>
-                                                                </td>        
-                                                                <td><?= htmlspecialchars($user['username'] ?? '-') ?></td>
+                                                                </td>
                                                                 <td>
                                                                     <!-- Tombol Hapus -->
                                                                     <a href="#" 
@@ -176,17 +118,18 @@
                                                 </tbody>
                                                 <tfoot>
                                                     <tr>
+                                                        <th>No. KTA</th>
                                                         <th>Nama Lengkap</th>
                                                         <th>Email</th>
                                                         <th>Role</th>
                                                         <th>Avatar</th>
+                                                        <th>Username</th>
                                                         <th>Status Keanggotaan</th>
-                                                        <th>Username Akun</th>
+                                                        <th>Action</th>
                                                     </tr>
                                                 </tfoot>
                                             </table>
-                                                        <div id="modalContainer"></div>
-
+                                            <div id="modalContainer"></div>
                                         </div>
                                     </div>
                                 </div>

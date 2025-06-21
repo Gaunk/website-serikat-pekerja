@@ -38,12 +38,12 @@
         </div>
 
         <div class="relative mt-4">
-        <label for="confirm_password" class="block text-sm font-medium text-gray-700">Password</label>
-        <input id="confirm_password" name="confirm_password" type="password" required autocomplete="current-password"
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password"
                 placeholder="Confirm your password"
                 class="mt-1 appearance-none rounded-md w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
         <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-            <button type="button" onclick="togglePassword('confirm_password', this)" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+            <button type="button" onclick="togglePassword('password', this)" class="text-gray-500 hover:text-gray-700 focus:outline-none">
             👁️
             </button>
         </div>

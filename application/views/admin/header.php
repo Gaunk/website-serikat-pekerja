@@ -41,12 +41,6 @@
                                             <a class="nav-link" href="<?= base_url('admin/pengguna') ?>">Daftar pengguna <span class="badge badge-secondary">New</span></a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="pages/general.html">Tambah pengguna</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/carousel.html">Level akses</a>
-                                        </li>
-                                        <li class="nav-item">
                                             <a class="nav-link" href="pages/listgroup.html">Aktivitas pengguna</a>
                                         </li>
                                     </ul>
@@ -71,18 +65,6 @@
                                     <ul class="nav flex-column">
                                         <li class="nav-item">
                                             <a class="nav-link" href="pages/form-elements.html">Tambah Berita</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/form-validation.html">Pengaturan SEO</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/multiselect.html">Multiselect</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/datepicker.html">Date Picker</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="pages/bootstrap-select.html">Bootstrap Select</a>
                                         </li>
                                     </ul>
                                 </div>

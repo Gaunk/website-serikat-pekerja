@@ -124,6 +124,34 @@ public function generate_next_no_kta() {
     return $next_no_kta;
 }
 
+public function count_is_active() {
+    // Count users with is_blocked = 0 (active users) directly from the 'users' table
+    $this->db->select('COUNT(*) as is_active');
+    $this->db->from('users');
+    $this->db->where('users.is_blocked', 0);  // Filter for active users (is_blocked = 0)
+    $query = $this->db->get();
+    
+    $result = $query->row();  // Fetch the result row
+    return $result->is_active;  // Return the count of active users
+}
+
+public function count_total_users() {
+    // Count all rows in the 'users' table
+    return $this->db->count_all('users');
+}
+public function count_is_blocked() {
+    // Count users with is_blocked = 1 (inactive or blocked users) directly from the 'users' table
+    $this->db->select('COUNT(*) as is_blocked');
+    $this->db->from('users');
+    $this->db->where('users.is_blocked', 1);  // Filter for blocked/inactive users (is_blocked = 1)
+    $query = $this->db->get();
+    
+    $result = $query->row();  // Fetch the result row
+    return $result->is_blocked;  // Return the count of blocked users
+}
+
+
+
 // In Admin_model.php
 public function update_biodata_no_kta($user_id, $data) {
     // Update the biodata table based on user_id and the provided data

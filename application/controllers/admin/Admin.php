@@ -18,31 +18,44 @@ class Admin extends CI_Controller {
     }
 
     public function dashboard() {
-        $user_id = $this->session->userdata('user_id');
-        if (!$user_id) {
-            $this->session->set_flashdata('error', 'Sesi tidak valid. Silakan login kembali.');
-            return redirect('auth/login');
-        }
-
-        $user = $this->Admin_model->get_user_by_id($user_id);
-        if (!$user) {
-            $this->session->set_flashdata('error', 'User tidak ditemukan.');
-            return redirect('auth/login');
-        }
-
-        $data = [
-            'judul'     => 'Admin - Dashboard',
-            'biodata'   => $this->Admin_model->get_all_biodata(),
-            'username'  => $user['username'],
-            'email'     => $user['email'],
-            'avatar'    => $user['avatar'],
-        ];
-
-        $this->load->view('admin/head', $data);
-        $this->load->view('admin/header', $data);
-        $this->load->view('admin/dashboard', $data);
-        $this->load->view('admin/footer');
+    $user_id = $this->session->userdata('user_id');
+    if (!$user_id) {
+        $this->session->set_flashdata('error', 'Sesi tidak valid. Silakan login kembali.');
+        return redirect('auth/login');
     }
+
+    $user = $this->Admin_model->get_user_by_id($user_id);
+    if (!$user) {
+        $this->session->set_flashdata('error', 'User tidak ditemukan.');
+        return redirect('auth/login');
+    }
+
+    // Get the total number of users
+    $total_users = $this->Admin_model->count_total_users();
+
+    // Get the total number of blocked users (is_blocked = 1)
+    $blocked_users = $this->Admin_model->count_is_blocked();
+
+    $active_users = $this->Admin_model->count_is_active();
+
+    $data = [
+        'judul'        => 'Admin - Dashboard',
+        'biodata'      => $this->Admin_model->get_all_biodata(),
+        'username'     => $user['username'],
+        'email'        => $user['email'],
+        'avatar'       => $user['avatar'],
+        'total_users'  => $total_users,
+        'blocked_users'=> $blocked_users,  // Pass blocked users count to the view
+        'active_users' => $active_users,   // Pass active users count to the view
+    ];
+
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
+    $this->load->view('admin/dashboard', $data);
+    $this->load->view('admin/footer');
+}
+
+
 
     public function settings() {
         $username = $this->session->userdata('username');
@@ -272,12 +285,12 @@ public function hapus_pengguna($id) {
 
 
 
-// Fungsi untuk menampilkan daftar pengguna
+// Fungsi untuk menampilkan daftar pengguna cooooooy
     public function pengguna() {
         // Ambil data pengguna dari model
         $users = $this->Admin_model->get_all_users();  // Panggil method untuk mengambil data pengguna
 
-        // Data untuk dikirim ke view
+        // Data untuk dikirim ke view lieurcoding ahk
         $data = [
             'judul'    => 'Admin - Daftar Pengguna',
             'users'    => $users,  // Menambahkan data pengguna
