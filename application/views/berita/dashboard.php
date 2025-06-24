@@ -129,14 +129,31 @@ table td {
                 <form action="<?= base_url('admin/tambah_berita') ?>" method="POST" enctype="multipart/form-data">
                     <input type="hidden" id="form-mode" name="mode" value="add"> <!-- Default mode is 'add' -->
 
+                    <!-- Judul -->
                     <div class="form-group">
                         <label for="judul">Judul</label>
                         <input type="text" class="form-control" id="judul" name="judul" required>
                     </div>
+
+                    <!-- Konten -->
                     <div class="form-group">
                         <label for="konten">Konten</label>
                         <textarea class="form-control" id="konten" name="konten" rows="5" required></textarea>
                     </div>
+
+                    <!-- Kategori Berita -->
+                    <div class="form-group">
+                        <label for="kategori_id">Kategori</label>
+                        <select class="form-control" id="kategori_id" name="kategori_id" required>
+                            <option value="">-- Pilih Kategori --</option>
+                            <?php foreach ($kategori as $k): ?>
+                                <option value="<?= $k['id']; ?>"><?= htmlspecialchars($k['nama_kategori']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+
+                    <!-- Gambar -->
                     <div class="form-group" id="image-upload-section">
                         <label for="image">Gambar</label>
                         <!-- Custom file input wrapper -->
@@ -159,4 +176,3 @@ table td {
         </div>
     </div>
 </div>
-

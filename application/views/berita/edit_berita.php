@@ -31,31 +31,48 @@
                         <div class="row">
                             <!-- ============================================================== -->
 <!-- basic form -->
-<!-- ============================================================== -->
 <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12 col-12">
     <div class="card">
-        <h5 class="card-header">Basic Form</h5>
+        <h5 class="card-header">Edit Berita</h5>
         <div class="card-body">
-            <form action="<?= base_url('admin/edit_berita/' . $berita['id']) ?>" method="POST" enctype="multipart/form-data" id="basicform" data-parsley-validate="">
+            <form action="<?= base_url('admin/edit_berita/' . $berita['id']) ?>" method="POST" enctype="multipart/form-data" id="basicform" data-parsley-validate>
+                <!-- Hidden ID jika diperlukan -->
+                <input type="hidden" name="id" value="<?= $berita['id']; ?>">
 
                 <!-- Judul -->
                 <div class="form-group">
                     <label for="judul">Judul</label>
-                    <input id="judul" name="judul" value="<?= set_value('judul', $berita['judul']) ?>" 
-                        data-parsley-trigger="change" required placeholder="Enter user name" autocomplete="off" class="form-control">
+                    <input id="judul" name="judul" 
+                        value="<?= set_value('judul', $berita['judul']) ?>" 
+                        data-parsley-trigger="change" 
+                        required 
+                        placeholder="Masukkan Judul Berita" 
+                        autocomplete="off" 
+                        class="form-control">
                 </div>
 
                 <!-- Konten -->
                 <div class="form-group">
                     <label for="konten">Konten Berita</label>
-                    <textarea class="form-control" name="konten" id="konten" rows="3"><?= set_value('konten', $berita['konten']) ?></textarea>
+                    <textarea class="form-control" name="konten" id="konten" rows="5" required><?= set_value('konten', $berita['konten']) ?></textarea>
+                </div>
+
+                <!-- Kategori -->
+                <div class="form-group">
+                    <label for="kategori_id">Kategori</label>
+                    <select name="kategori_id" id="kategori_id" class="form-control" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        <?php foreach ($kategori_list as $kategori): ?>
+                            <option value="<?= $kategori['id']; ?>" <?= ($selected_kategori == $kategori['id']) ? 'selected' : ''; ?>>
+                                <?= htmlspecialchars($kategori['nama_kategori']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
 
                 <!-- Gambar Berita -->
                 <div class="form-group">
                     <label for="image">Gambar Berita</label>
-
-                    <!-- Custom file input wrapper -->
                     <div class="custom-file">
                         <input type="file" class="custom-file-input" id="image" name="image" accept="image/*" onchange="previewImage(event)">
                         <label class="custom-file-label" for="image">Pilih Gambar</label>
@@ -63,27 +80,55 @@
 
                     <!-- Current image display -->
                     <?php if ($berita['image']): ?>
-                        <p><strong>Gambar saat ini:</strong></p>
+                        <p class="mt-2"><strong>Gambar saat ini:</strong></p>
                         <img id="current-image" src="<?= base_url($berita['image']) ?>" alt="Gambar Berita" class="img-fluid rounded" style="max-width: 100%; max-height: 250px;">
                     <?php else: ?>
-                        <p>Belum ada gambar.</p>
+                        <p class="mt-2">Belum ada gambar.</p>
                     <?php endif; ?>
-
                 </div>
 
                 <!-- Buttons -->
-                <div class="col-sm-6 pl-0">
-                    <p class="text-right">
-                        <a href="<?= base_url('admin/berita') ?>" class="btn btn-space btn-secondary">Kembali ke Berita</a>
-
-                        <a href="<?= base_url('admin/berita') ?>" class="btn btn-space btn-primary">Submit</a>
-                    </p>
+                <div class="form-group text-right">
+                    <a href="<?= base_url('admin/berita') ?>" class="btn btn-secondary">Kembali ke Berita</a>
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
-
             </form>
         </div>
     </div>
 </div>
+
+<!-- Script untuk preview image dan update nama file input -->
+<script>
+    // Preview gambar saat file dipilih
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function(){
+            const output = document.getElementById('current-image');
+            if(output) {
+                output.src = reader.result;
+            } else {
+                // Jika gambar sebelumnya tidak ada, buat tag img baru
+                const img = document.createElement('img');
+                img.id = 'current-image';
+                img.src = reader.result;
+                img.style.maxWidth = '100%';
+                img.style.maxHeight = '250px';
+                img.classList.add('img-fluid', 'rounded');
+                event.target.parentNode.parentNode.appendChild(img);
+            }
+        }
+        if(event.target.files[0]) {
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    }
+
+    // Update nama file di label custom file input Bootstrap
+    document.querySelector('.custom-file-input').addEventListener('change', function(e){
+        let fileName = e.target.files[0]?.name || 'Pilih Gambar';
+        e.target.nextElementSibling.innerText = fileName;
+    });
+</script>
+
 
 <!-- Script JavaScript untuk Preview Gambar -->
 <script>

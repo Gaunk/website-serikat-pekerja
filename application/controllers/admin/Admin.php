@@ -6,6 +6,8 @@ class Admin extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('Admin_model');
+        $this->load->model('Berita_model');  // Pastikan ini ada
+
         $this->load->model('User_model'); // <- Tambahkan ini
         $this->load->library(['session', 'upload']);
         $this->load->helper(['url', 'form']);
@@ -392,20 +394,20 @@ public function hapus_pengguna($id) {
     redirect('admin/pengguna');
 }
 
-// BLOCK BERITAAAAAAAAAAAAA LIEURCODING AHK
 public function berita() {
-    // Ambil semua berita dari model
-    $berita = $this->Admin_model->get_all_berita();
+    $berita = $this->Berita_model->get_all_berita();
+    $kategori = $this->Berita_model->get_all_kategori();
 
     $data = [
         'judul' => 'Admin - Daftar Berita',
-        'berita' => $berita, // Pass berita ke view
+        'berita' => $berita,
+        'kategori' => $kategori,
         'username' => $this->session->userdata('username'),
     ];
 
     $this->load->view('berita/head', $data);
     $this->load->view('berita/header', $data);
-    $this->load->view('berita/dashboard', $data); // Pastikan ada view `berita/berita.php`
+    $this->load->view('berita/dashboard', $data);
     $this->load->view('berita/footer');
 }
 
@@ -414,6 +416,7 @@ public function tambah_berita() {
     if ($_POST) {
         $judul = $this->input->post('judul', true);
         $konten = $this->input->post('konten', true);
+        $kategori_id = $this->input->post('kategori_id', true);
         
         // Buat slug dari judul
         $slug = url_title($judul, 'dash', true);
@@ -442,6 +445,7 @@ public function tambah_berita() {
             'judul' => $judul,
             'slug' => $slug,
             'konten' => $konten,
+            'kategori_id' => $kategori_id,
             'image' => $image
         ];
 
@@ -457,7 +461,10 @@ public function tambah_berita() {
         redirect('admin/berita');
     }
 
-    // Jika belum ada POST data, tampilkan form tambah berita
+    // Ambil kategori list dengan berita yang terkait
+    $data['kategori_list'] = $this->Berita_model->get_all_kategori_with_berita(); // Mengambil kategori dan berita terkait
+
+    // Tampilkan form tambah berita
     $data['judul'] = 'Tambah Berita';
     $this->load->view('berita/head', $data);
     $this->load->view('berita/header', $data);
@@ -467,27 +474,32 @@ public function tambah_berita() {
 
 public function edit_berita($id) {
     // Ambil data berita berdasarkan ID
-    
-    $berita = $this->Admin_model->get_berita_by_id($id);
+    $berita = $this->Berita_model->get_berita_by_id($id);
+
     if (!$berita) {
         $this->session->set_flashdata('error', 'Berita tidak ditemukan.');
         redirect('admin/berita');
     }
 
-    // Jika ada data POST (saat form disubmit)
-    if ($_POST) {
-        $judul = $this->input->post('judul', true);
-        $konten = $this->input->post('konten', true);
-        $slug = url_title($judul, 'dash', true);
+    // Jika form disubmit
+    if ($this->input->post()) {
+        // Ambil data dari POST dengan XSS filtering
+        $judul       = $this->input->post('judul', true);
+        $konten      = $this->input->post('konten', true);
+        $kategori_id = $this->input->post('kategori_id', true);
+        $slug        = url_title($judul, 'dash', true);
 
-        // Proses upload gambar jika ada
-        $image = $berita['image']; // Gunakan gambar lama jika tidak ada gambar baru
+        // Nama gambar default (gambar lama)
+        $image = $berita['image'];
+
+        // Proses upload gambar jika ada file baru
         if (!empty($_FILES['image']['name'])) {
             $config['upload_path']   = './temp_admin/assets/berita/';
             $config['allowed_types'] = 'jpg|jpeg|png|gif';
             $config['max_size']      = 2048;
             $config['file_name']     = time() . '_' . $_FILES['image']['name'];
 
+            $this->load->library('upload', $config);
             $this->upload->initialize($config);
 
             if ($this->upload->do_upload('image')) {
@@ -499,21 +511,23 @@ public function edit_berita($id) {
                     unlink('./' . $berita['image']);
                 }
             } else {
+                // Upload gagal, tampilkan error dan redirect ke form edit
                 $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
                 redirect('admin/berita/edit/' . $id);
             }
         }
 
-        // Data yang akan diperbarui
-        $data = [
-            'judul' => $judul,
-            'slug' => $slug,
-            'konten' => $konten,
-            'image' => $image
+        // Data yang akan diupdate
+        $update_data = [
+            'judul'       => $judul,
+            'slug'        => $slug,
+            'konten'      => $konten,
+            'kategori_id' => $kategori_id,
+            'image'       => $image
         ];
 
-        // Update berita di database
-        $update = $this->Admin_model->update_berita($id, $data);
+        // Update berita melalui model
+        $update = $this->Berita_model->update_berita($id, $update_data);
 
         if ($update) {
             $this->session->set_flashdata('success', 'Berita berhasil diperbarui.');
@@ -524,17 +538,24 @@ public function edit_berita($id) {
         redirect('admin/berita');
     }
 
-    // Jika tidak ada data POST, tampilkan form edit
+    // Jika belum submit form, load form edit dengan data berita dan kategori
     $data = [
-        'judul' => 'Admin - Edit Berita',
-        'berita' => $berita,
+        'judul'           => 'Admin - Edit Berita',
+        'berita'          => $berita,
+        'kategori_list'   => $this->Berita_model->get_all_kategori(), // Pastikan ini dipakai di view
+        'selected_kategori' => $berita['kategori_id']
     ];
 
+    // Load views
     $this->load->view('berita/head', $data);
     $this->load->view('berita/header', $data);
-    $this->load->view('berita/edit_berita', $data); // Pastikan ada view `berita/edit_berita.php`
+    $this->load->view('berita/edit_berita', $data);
     $this->load->view('berita/footer');
 }
+
+
+
+
 
 public function hapus_berita($id) {
     // Ambil data berita berdasarkan ID

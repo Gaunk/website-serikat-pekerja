@@ -35,7 +35,7 @@
     <title><?= $judul ?></title>
 
     <style>
-        body, html {
+        * {
         cursor: pointer; /* cursor berubah jadi tangan */
         }
 

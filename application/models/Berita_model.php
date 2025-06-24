@@ -8,6 +8,23 @@ class Berita_model extends CI_Model {
         $this->load->database();
     }
 
+   public function get_all_kategori()
+{
+    return $this->db->get('kategori')->result_array();
+}
+
+    // Function untuk mengambil semua kategori dengan informasi berita yang terkait
+public function get_all_kategori_with_berita() {
+    // Query untuk mengambil data kategori dan berita terkait
+    $this->db->select('kategori.id as kategori_id, kategori.nama as kategori_name, berita.id as berita_id, berita.judul, berita.konten');
+    $this->db->from('kategori');
+    $this->db->join('berita', 'berita.kategori_id = kategori.id', 'left'); // LEFT JOIN untuk memastikan semua kategori diambil
+    $query = $this->db->get();
+    
+    // Mengembalikan hasil query dalam bentuk array
+    return $query->result_array();
+}
+
     // Fungsi untuk meng-upload gambar
     public function upload_image($field_name) {
         $config['upload_path'] = './uploads/berita/';
@@ -34,15 +51,25 @@ class Berita_model extends CI_Model {
         $this->db->insert('berita', $data);
     }
 
-    // Mengambil semua berita
-    public function get_all_berita() {
-        return $this->db->get('berita')->result_array();
-    }
+    public function get_all_berita()
+{
+    $this->db->select('berita.*, kategori.nama_kategori');
+    $this->db->from('berita');
+    $this->db->join('kategori', 'kategori.id = berita.kategori_id', 'left');
+    $this->db->order_by('berita.created_at', 'DESC');
+    return $this->db->get()->result_array();
+}
 
-    // Mengambil berita berdasarkan ID
-    public function get_berita_by_id($id) {
-        return $this->db->get_where('berita', ['id' => $id])->row_array();
-    }
+  public function get_berita_by_id($id) {
+    $this->db->select('berita.*, kategori.nama_kategori');
+    $this->db->from('berita');
+    $this->db->join('kategori', 'berita.kategori_id = kategori.id', 'left');
+    $this->db->where('berita.id', $id);
+    $query = $this->db->get();
+
+    return $query->num_rows() > 0 ? $query->row_array() : false;
+}
+
 
     // Memperbarui berita
     public function update_berita($id, $data) {

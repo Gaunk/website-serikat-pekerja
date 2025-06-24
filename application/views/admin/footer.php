@@ -65,6 +65,19 @@
     <!-- Toastr -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
+    // Update label input saat file dipilih
+    $(document).ready(function() {
+        bsCustomFileInput.init();
+    });
+</script>
+<script>
+  $(document).ready(function() {
+    $('#btnTambahPengguna').click(function() {
+      $('#modalTambahPengguna').modal('show');
+    });
+  });
+</script>
+    <script>
         $(document).ready(function() {
     $('.btn-lihat').on('click', function(e) {
         e.preventDefault();
