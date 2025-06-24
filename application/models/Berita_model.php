@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+// EDAN KOPI BEAK 5 TAPI ASA GREGET JADI LIEURCODING
 class Berita_model extends CI_Model {
 
     public function __construct() {

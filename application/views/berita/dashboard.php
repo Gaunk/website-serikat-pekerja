@@ -79,12 +79,11 @@ table td {
                                                                 <td><?= $b['konten'] ?></td>
                                                                 <td>
                                                                     <?php if ($b['image']): ?>
-                                                                        <img src="<?= base_url($b['image']) ?>" alt="Gambar Berita" class="img-responsive" />
+                                                                        <img src="<?= base_url($b['image']) ?>" alt="Gambar Berita" class="img-thumbnail" style="max-width: 100px; height: auto;" />
                                                                     <?php else: ?>
                                                                         <span>No Image</span>
                                                                     <?php endif; ?>
                                                                 </td>
-
                                                                 <td>
                                                                 <!-- Edit Button with Icon -->
                                                                 <a href="<?= base_url('admin/edit_berita/' . $b['id']) ?>" class="btn btn-success btn-sm">
@@ -170,7 +169,10 @@ table td {
                         <p>Gambar sebelumnya</p>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Tambah Berita</button>
+                 </div>
                 </form>
             </div>
         </div>

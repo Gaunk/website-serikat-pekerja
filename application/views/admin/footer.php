@@ -14,7 +14,8 @@
     <!-- Optional JavaScript -->
     <!-- jquery 3.3.1 (gunakan satu versi jquery saja) -->
     <script src="<?= base_url('temp_admin/') ?>assets/vendor/jquery/jquery-3.3.1.min.js"></script>
-    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <!-- bootstrap bundle js -->
     <script src="<?= base_url('temp_admin/') ?>assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
     
@@ -64,6 +65,27 @@
 
     <!-- Toastr -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <!-- Bootstrap Bundle (jika belum ada) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Bootstrap Select JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('.select-with-icon').select2({
+      templateResult: formatWithIcons,
+      templateSelection: formatWithIcons
+    });
+
+    function formatWithIcons (state) {
+      if (!state.id) return state.text; // optgroup
+      var icon = $(state.element).data('icon');
+      return $('<span><i class="' + icon + '"></i> ' + state.text + '</span>');
+    }
+  });
+</script>
+
     <script>
     // Update label input saat file dipilih
     $(document).ready(function() {

@@ -200,44 +200,34 @@ class Admin extends CI_Controller {
     }
 
  
-   public function update_role_pengguna($id) {
-    // Get the role and status_keanggotaan from POST
+  public function update_role_pengguna($id) {
     $role = $this->input->post('role', true);
     $status = $this->input->post('status_keanggotaan', true);
 
-    // Validate the role
     if (!in_array($role, ['admin', 'user'])) {
         $this->session->set_flashdata('error', 'Role tidak valid.');
         return redirect('admin/pengguna');
     }
 
-    // Validate the status_keanggotaan
-    if (!in_array($status, ['aktif', 'tidak aktif'])) {
+    if (!in_array(strtolower($status), ['aktif', 'tidak aktif'])) {
         $this->session->set_flashdata('error', 'Status keanggotaan tidak valid.');
         return redirect('admin/pengguna');
     }
 
-    // Prepare the data for updating the users table
     $update_data_users = [
         'role' => $role,
-        'is_blocked' => ($status === 'tidak aktif') ? 1 : 0 // Block user if status is "tidak aktif"
+        'is_blocked' => (strtolower($status) === 'tidak aktif') ? 1 : 0,
     ];
 
-    // Prepare the data for updating the biodata table (only status_keanggotaan, no_kta remains unchanged)
     $update_data_biodata = [
         'status_keanggotaan' => $status
     ];
 
-    // Start a transaction to ensure both updates happen together
     $this->db->trans_start();
 
-    // Update the role in the users table
     $updated_users = $this->Admin_model->update_user_role((int)$id, $update_data_users);
-
-    // Update the status_keanggotaan in the biodata table (no_kta will NOT be updated)
     $updated_biodata = $this->Admin_model->update_biodata_status((int)$id, $update_data_biodata);
 
-    // Check if all updates were successful
     if ($updated_users && $updated_biodata) {
         $this->db->trans_commit();
         $this->session->set_flashdata('success', 'Role dan status berhasil diperbarui.');
@@ -246,9 +236,9 @@ class Admin extends CI_Controller {
         $this->session->set_flashdata('error', 'Gagal memperbarui role atau status keanggotaan.');
     }
 
-    // Redirect to the pengguna page
     redirect('admin/pengguna');
 }
+
 
 public function hapus_pengguna($id) {
     // Cek apakah user dengan ID tersebut ada
