@@ -220,6 +220,11 @@ $(document).ready(function () {
             }
         });
     </script>
+<script>
+    setTimeout(() => {
+        $('.alert').fadeOut('slow');
+    }, 5000); // hilang setelah 5 detik
+</script>
 
 </body>
 </html>

@@ -139,6 +139,22 @@ table td {
                         <label for="konten">Konten</label>
                         <textarea class="form-control" id="konten" name="konten" rows="5" required></textarea>
                     </div>
+                    <!-- Meta Title -->
+                    <div class="form-group">
+                        <label for="meta_title">Meta Title</label>
+                            <input type="text" class="form-control" id="meta_title" name="meta_title" placeholder="contoh: berita, politik, nasional">
+                    </div>
+                    <!-- meta_description -->
+                    <div class="form-group">
+                        <label for="konten">Meta Description</label>
+                    <textarea name="meta_description" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <!-- meta_keywords -->
+                    <div class="form-group">
+                        <label for="konten">Meta Keywords</label>
+                        <input type="text" class="form-control" id="meta_keywords" name="meta_keywords" placeholder="contoh: berita, politik, nasional">
+                    </div>
 
                     <!-- Kategori Berita -->
                     <div class="form-group">

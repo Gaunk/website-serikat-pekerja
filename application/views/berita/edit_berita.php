@@ -36,26 +36,87 @@
         <h5 class="card-header">Edit Berita</h5>
         <div class="card-body">
             <form action="<?= base_url('admin/edit_berita/' . $berita['id']) ?>" method="POST" enctype="multipart/form-data" id="basicform" data-parsley-validate>
-                <!-- Hidden ID jika diperlukan -->
+
+                <!-- ID Tersembunyi -->
                 <input type="hidden" name="id" value="<?= $berita['id']; ?>">
 
                 <!-- Judul -->
                 <div class="form-group">
                     <label for="judul">Judul</label>
-                    <input id="judul" name="judul" 
+                    <input 
+                        type="text" 
+                        id="judul" 
+                        name="judul" 
                         value="<?= set_value('judul', $berita['judul']) ?>" 
-                        data-parsley-trigger="change" 
                         required 
+                        class="form-control" 
                         placeholder="Masukkan Judul Berita" 
-                        autocomplete="off" 
-                        class="form-control">
+                        autocomplete="off"
+                    >
                 </div>
 
                 <!-- Konten -->
                 <div class="form-group">
                     <label for="konten">Konten Berita</label>
-                    <textarea class="form-control" name="konten" id="konten" rows="5" required><?= set_value('konten', $berita['konten']) ?></textarea>
+                    <textarea 
+                        class="form-control" 
+                        name="konten" 
+                        id="konten" 
+                        rows="5" 
+                        required
+                    ><?= set_value('konten', $berita['konten']) ?></textarea>
                 </div>
+
+                <!-- Meta Title -->
+                <div class="form-group">
+                    <label for="meta_title">Meta Title</label>
+                    <textarea 
+                        class="form-control" 
+                        id="meta_title" 
+                        name="meta_title" 
+                        rows="2" 
+                        maxlength="60"
+                        required
+                        data-parsley-maxlength="60"
+                    ><?= htmlspecialchars($berita['meta_title']) ?></textarea>
+                    <small class="form-text text-muted">Maksimal 60 karakter</small>
+                </div>
+
+
+                <!-- Meta Description -->
+                <div class="form-group">
+                    <label for="meta_description">Meta Description</label>
+                    <textarea 
+                        class="form-control" 
+                        id="meta_description" 
+                        name="meta_description" 
+                        rows="3" 
+                        maxlength="160"
+                        required
+                        data-parsley-maxlength="160"
+                    ><?= htmlspecialchars($berita['meta_description']) ?></textarea>
+                    <small class="form-text text-muted">Maksimal 160 karakter</small>
+                </div>
+
+
+                <!-- Meta Keywords -->
+                <div class="form-group">
+                    <label for="meta_keywords">Meta Keywords</label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="meta_keywords" 
+                        name="meta_keywords" 
+                        placeholder="contoh: berita, politik, nasional"
+                        value="<?= htmlspecialchars($berita['meta_keywords']) ?>"
+                    >
+                </div>
+
+                <script>
+                    var input = document.querySelector('#meta_keywords');
+                    new Tagify(input);
+                </script>
+
 
                 <!-- Kategori -->
                 <div class="form-group">
@@ -70,29 +131,43 @@
                     </select>
                 </div>
 
-                <!-- Gambar Berita -->
+                <!-- Upload Gambar -->
                 <div class="form-group">
                     <label for="image">Gambar Berita</label>
                     <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+                        <input 
+                            type="file" 
+                            class="custom-file-input" 
+                            id="image" 
+                            name="image" 
+                            accept="image/*" 
+                            onchange="previewImage(event)"
+                        >
                         <label class="custom-file-label" for="image">Pilih Gambar</label>
                     </div>
 
-                    <!-- Current image display -->
+                    <!-- Tampilkan gambar lama -->
                     <?php if ($berita['image']): ?>
                         <p class="mt-2"><strong>Gambar saat ini:</strong></p>
-                        <img id="current-image" src="<?= base_url($berita['image']) ?>" alt="Gambar Berita" class="img-fluid rounded" style="max-width: 100%; max-height: 250px;">
+                        <img 
+                            id="current-image" 
+                            src="<?= base_url($berita['image']) ?>" 
+                            alt="Gambar Berita" 
+                            class="img-fluid rounded" 
+                            style="max-width: 100%; max-height: 250px;"
+                        >
                     <?php else: ?>
-                        <p class="mt-2">Belum ada gambar.</p>
+                        <p class="mt-2 text-muted">Belum ada gambar.</p>
                     <?php endif; ?>
                 </div>
 
-                <!-- Buttons -->
+                <!-- Tombol Submit -->
                 <div class="form-group text-right">
                     <a href="<?= base_url('admin/berita') ?>" class="btn btn-secondary">Kembali ke Berita</a>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                 </div>
             </form>
+
         </div>
     </div>
 </div>

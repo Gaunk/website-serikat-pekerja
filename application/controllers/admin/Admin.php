@@ -5,10 +5,14 @@ class Admin extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->model('Admin_model');
-        $this->load->model('Berita_model');  // Pastikan ini ada
-
-        $this->load->model('User_model'); // <- Tambahkan ini
+        // Load semua model yang diperlukan
+    $this->load->model([
+        'Admin_model',
+        'Berita_model',
+        'Galeri_model',
+        'Seo_model',
+        'User_model','Slides_model', 'Logo_model'
+        ]);
         $this->load->library(['session', 'upload']);
         $this->load->helper(['url', 'form']);
         is_logged_in();
@@ -395,19 +399,22 @@ public function berita() {
         'username' => $this->session->userdata('username'),
     ];
 
-    $this->load->view('berita/head', $data);
-    $this->load->view('berita/header', $data);
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
     $this->load->view('berita/dashboard', $data);
-    $this->load->view('berita/footer');
+    $this->load->view('admin/footer');
 }
 
 public function tambah_berita() {
     // Cek apakah ada data POST yang dikirim
     if ($_POST) {
-        $judul = $this->input->post('judul', true);
-        $konten = $this->input->post('konten', true);
-        $kategori_id = $this->input->post('kategori_id', true);
-        
+        $judul        = $this->input->post('judul', true);
+        $konten       = $this->input->post('konten', true);
+        $kategori_id  = $this->input->post('kategori_id', true);
+        $meta_title   = $this->input->post('meta_title', true);
+        $meta_description = $this->input->post('meta_description', true);
+        $meta_keywords    = $this->input->post('meta_keywords', true);
+
         // Buat slug dari judul
         $slug = url_title($judul, 'dash', true);
 
@@ -430,13 +437,16 @@ public function tambah_berita() {
             }
         }
 
-        // Data yang akan disimpan ke database
+        // Data yang akan disimpan ke database, termasuk SEO
         $data = [
-            'judul' => $judul,
-            'slug' => $slug,
-            'konten' => $konten,
-            'kategori_id' => $kategori_id,
-            'image' => $image
+            'judul'            => $judul,
+            'slug'             => $slug,
+            'konten'           => $konten,
+            'kategori_id'      => $kategori_id,
+            'image'            => $image,
+            'meta_title'       => $meta_title,
+            'meta_description' => $meta_description,
+            'meta_keywords'    => $meta_keywords
         ];
 
         // Simpan berita ke database
@@ -451,16 +461,17 @@ public function tambah_berita() {
         redirect('admin/berita');
     }
 
-    // Ambil kategori list dengan berita yang terkait
-    $data['kategori_list'] = $this->Berita_model->get_all_kategori_with_berita(); // Mengambil kategori dan berita terkait
+    // Ambil kategori list
+    $data['kategori_list'] = $this->Berita_model->get_all_kategori_with_berita();
+    $data['judul'] = 'Tambah Berita';
 
     // Tampilkan form tambah berita
-    $data['judul'] = 'Tambah Berita';
-    $this->load->view('berita/head', $data);
-    $this->load->view('berita/header', $data);
-    $this->load->view('berita/tambah_berita', $data); // Pastikan ada view `berita/tambah_berita.php`
-    $this->load->view('berita/footer');
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
+    $this->load->view('berita/tambah_berita', $data); // View harus punya input SEO juga
+    $this->load->view('admin/footer');
 }
+
 
 public function edit_berita($id) {
     // Ambil data berita berdasarkan ID
@@ -468,25 +479,28 @@ public function edit_berita($id) {
 
     if (!$berita) {
         $this->session->set_flashdata('error', 'Berita tidak ditemukan.');
-        redirect('admin/berita');
+        return redirect('admin/berita');
     }
 
     // Jika form disubmit
     if ($this->input->post()) {
-        // Ambil data dari POST dengan XSS filtering
-        $judul       = $this->input->post('judul', true);
-        $konten      = $this->input->post('konten', true);
-        $kategori_id = $this->input->post('kategori_id', true);
-        $slug        = url_title($judul, 'dash', true);
+        // Ambil data dari form POST dengan XSS Filtering
+        $judul            = $this->input->post('judul', true);
+        $konten           = $this->input->post('konten', true);
+        $kategori_id      = $this->input->post('kategori_id', true);
+        $meta_title       = $this->input->post('meta_title', true);
+        $meta_description = $this->input->post('meta_description', true);
+        $meta_keywords    = $this->input->post('meta_keywords', true);
+        $slug             = url_title($judul, 'dash', true);
 
-        // Nama gambar default (gambar lama)
+        // Default image (gambar lama)
         $image = $berita['image'];
 
-        // Proses upload gambar jika ada file baru
+        // Proses upload gambar baru (jika ada)
         if (!empty($_FILES['image']['name'])) {
             $config['upload_path']   = './temp_admin/assets/berita/';
             $config['allowed_types'] = 'jpg|jpeg|png|gif';
-            $config['max_size']      = 2048;
+            $config['max_size']      = 2048; // 2MB
             $config['file_name']     = time() . '_' . $_FILES['image']['name'];
 
             $this->load->library('upload', $config);
@@ -497,26 +511,29 @@ public function edit_berita($id) {
                 $image = 'temp_admin/assets/berita/' . $upload_data['file_name'];
 
                 // Hapus gambar lama jika ada
-                if ($berita['image'] && file_exists('./' . $berita['image'])) {
+                if (!empty($berita['image']) && file_exists('./' . $berita['image'])) {
                     unlink('./' . $berita['image']);
                 }
             } else {
-                // Upload gagal, tampilkan error dan redirect ke form edit
+                // Gagal upload
                 $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
-                redirect('admin/berita/edit/' . $id);
+                return redirect('admin/berita/edit/' . $id);
             }
         }
 
-        // Data yang akan diupdate
+        // Data yang akan diupdate ke database
         $update_data = [
-            'judul'       => $judul,
-            'slug'        => $slug,
-            'konten'      => $konten,
-            'kategori_id' => $kategori_id,
-            'image'       => $image
+            'judul'            => $judul,
+            'slug'             => $slug,
+            'konten'           => $konten,
+            'kategori_id'      => $kategori_id,
+            'image'            => $image,
+            'meta_title'       => $meta_title,
+            'meta_description' => $meta_description,
+            'meta_keywords'    => $meta_keywords,
         ];
 
-        // Update berita melalui model
+        // Update melalui model
         $update = $this->Berita_model->update_berita($id, $update_data);
 
         if ($update) {
@@ -525,23 +542,24 @@ public function edit_berita($id) {
             $this->session->set_flashdata('error', 'Gagal memperbarui berita.');
         }
 
-        redirect('admin/berita');
+        return redirect('admin/berita');
     }
 
-    // Jika belum submit form, load form edit dengan data berita dan kategori
+    // Data untuk view (jika form belum dikirim)
     $data = [
-        'judul'           => 'Admin - Edit Berita',
-        'berita'          => $berita,
-        'kategori_list'   => $this->Berita_model->get_all_kategori(), // Pastikan ini dipakai di view
-        'selected_kategori' => $berita['kategori_id']
+        'judul'             => 'Admin - Edit Berita',
+        'berita'            => $berita,
+        'kategori_list'     => $this->Berita_model->get_all_kategori(),
+        'selected_kategori' => $berita['kategori_id'],
     ];
 
-    // Load views
-    $this->load->view('berita/head', $data);
-    $this->load->view('berita/header', $data);
+    // Tampilkan view edit
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
     $this->load->view('berita/edit_berita', $data);
-    $this->load->view('berita/footer');
+    $this->load->view('admin/footer');
 }
+
 
 
 
@@ -570,6 +588,571 @@ public function hapus_berita($id) {
     }
 
     redirect('admin/berita');
+}
+
+
+public function seo()
+{
+    
+    // Data untuk view
+    $data = [
+        'judul'             => 'Admin - SEO',
+        'seo'   => $this->Seo_model->get_seo_data(), // jika ada
+        'seo_list' => $this->Seo_model->get_all_seo()
+
+
+
+    ];
+
+    // Tampilkan view edit berita untuk keperluan SEO
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
+    $this->load->view('seo/dashboard', $data); // Atau view khusus SEO jika ada: seo_berita.php
+    $this->load->view('admin/footer');
+}
+
+public function simpan_seo()
+{
+    $meta_title       = $this->input->post('meta_title');
+    $meta_description = $this->input->post('meta_description');
+    $meta_keywords    = $this->input->post('meta_keywords');
+
+    // Simpan ke database melalui model
+    $this->Seo_model->insert_seo([
+        'meta_title'       => $meta_title,
+        'meta_description' => $meta_description,
+        'meta_keywords'    => $meta_keywords,
+    ]);
+
+    // Redirect kembali ke halaman SEO
+    $this->session->set_flashdata('success', 'Data SEO berhasil disimpan.');
+    redirect('admin/seo');
+}
+
+public function edit_seo($id)
+{
+    $seo = $this->Seo_model->get_seo_by_id($id);
+
+    if (!$seo) {
+        show_404(); // Jika ID tidak ditemukan
+    }
+
+    $data = [
+        'judul' => 'Edit SEO',
+        'seo'   => $seo
+    ];
+
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
+    $this->load->view('seo/edit_form', $data); // Buat view baru khusus edit
+    $this->load->view('admin/footer');
+}
+
+public function update_seo()
+{
+    $id = $this->input->post('id');
+    $meta_title = $this->input->post('meta_title', true);
+    $meta_description = $this->input->post('meta_description', true);
+    $meta_keywords = $this->input->post('meta_keywords', true);
+
+    // Validasi sederhana
+    if (empty($id) || empty($meta_title) || empty($meta_description) || empty($meta_keywords)) {
+        $this->session->set_flashdata('error', 'Semua field harus diisi!');
+        redirect('admin/update_seo/' . $id);
+        return;
+    }
+
+    $data = [
+        'meta_title' => trim($meta_title),
+        'meta_description' => trim($meta_description),
+        'meta_keywords' => trim($meta_keywords)
+    ];
+
+    $update = $this->Seo_model->update_seo($id, $data);
+
+    if ($update) {
+        $this->session->set_flashdata('success', 'SEO berhasil diperbarui.');
+    } else {
+        $this->session->set_flashdata('error', 'Gagal memperbarui SEO.');
+    }
+
+    redirect('admin/seo');
+}
+
+
+
+public function delete_seo($id)
+{
+    $this->Seo_model->delete_seo($id);
+    $this->session->set_flashdata('success', 'Data SEO berhasil dihapus.');
+    redirect('admin/seo');
+}
+
+// BLOCK PROFILE WEBSITE
+public function profile_website()
+{
+    $profile = $this->Seo_model->get_profile();
+    $logo = $this->Logo_model->get_logo(); // Ambil logo dari database
+
+    $data = [
+        'judul' => 'Admin - Profil Website',
+        'profile' => $profile,
+        'logo' => $logo,
+    ];
+
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
+    $this->load->view('seo/profile_website', $data); // Buat view ini
+    $this->load->view('admin/footer');
+}
+
+ public function insert_website()
+{
+    $site_name       = $this->input->post('site_name');
+    $site_desc       = $this->input->post('site_desc');
+    $keyword_website       = $this->input->post('keyword_website');
+    $contact_email   = $this->input->post('contact_email');
+
+    // Cek apakah data website sudah ada
+    $existing = $this->Seo_model->get_site_web();
+
+    if ($existing) {
+        // Kalau data sudah ada, update data
+        $this->Seo_model->update_site_web($existing->id, [
+            'site_name'     => $site_name,
+            'site_desc'     => $site_desc,
+            'keyword_website' => $keyword_website,
+            'contact_email' => $contact_email,
+        ]);
+
+        $this->session->set_flashdata('success', 'Data SEO berhasil diperbarui.');
+    } else {
+        // Kalau belum ada data, insert baru
+        $this->Seo_model->insert_site_web([
+            'site_name'     => $site_name,
+            'site_desc'     => $site_desc,
+            'keyword_website' => $keyword_website,
+            'contact_email' => $contact_email,
+        ]);
+
+        $this->session->set_flashdata('success', 'Data SEO berhasil disimpan.');
+    }
+
+    redirect('admin/profile_website');
+}
+
+ public function save_logo()
+{
+    $id_logo = $this->input->post('id_logo');
+    $old_image = $this->input->post('old_image');
+    $delete_image = $this->input->post('delete_image');
+
+    $image = $old_image; // Default pakai gambar lama
+
+    // Jika user centang hapus gambar
+    if ($delete_image == "1" && file_exists($old_image)) {
+        @unlink($old_image);
+        $image = ''; // Kosongkan image di database
+    }
+
+    // Jika upload gambar baru
+    if (!empty($_FILES['image']['name'])) {
+        $config['upload_path']   = './temp_admin/assets/logo/';
+        $config['allowed_types'] = 'jpg|jpeg|png|gif';
+        $config['max_size']      = 4048;
+        $config['file_name']     = time() . '_' . $_FILES['image']['name'];
+
+        $this->load->library('upload');
+        $this->upload->initialize($config);
+
+        if ($this->upload->do_upload('image')) {
+            $upload_data = $this->upload->data();
+            $image = 'temp_admin/assets/logo/' . $upload_data['file_name'];
+
+            // Hapus file lama jika ada dan belum dihapus sebelumnya
+            if ($old_image && file_exists($old_image)) {
+                @unlink($old_image);
+            }
+        } else {
+            $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
+            redirect('admin/profile_website');
+            return;
+        }
+    }
+
+    // Data yang akan disimpan ke database
+    $data = [
+        'image' => $image,
+        'updated_at' => date('Y-m-d H:i:s')
+    ];
+
+    // Update berdasarkan ID logo
+    $this->Logo_model->update_logo($data, $id_logo);
+
+    $this->session->set_flashdata('success', 'Logo berhasil diperbarui.');
+    redirect('admin/profile_website');
+}
+
+
+
+
+
+
+// 
+public function galeri() {
+    $data['judul'] = 'Admin - Manajemen Galeri';
+    $data['galeri'] = $this->Galeri_model->get_all_galeri();
+
+    // Ambil flashdata error dan success untuk ditampilkan di view
+    $data['error'] = $this->session->flashdata('error');
+    $data['success'] = $this->session->flashdata('success');
+
+    // Load view list galeri
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
+    $this->load->view('admin/galeri', $data);
+    $this->load->view('admin/footer');
+}
+
+public function tambah_galeri() {
+    // Cek apakah ada data POST yang dikirim
+    if ($_POST) {
+        $judul        = $this->input->post('judul', true);
+        $deskripsi       = $this->input->post('deskripsi', true);
+        $date_created = date('Y-m-d H:i:s');
+
+        // Proses upload gambar jika ada
+        $image = '';
+        if (!empty($_FILES['image']['name'])) {
+            $config['upload_path']   = './temp_admin/assets/galeri/';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['max_size']      = 2048;
+            $config['file_name']     = time() . '_' . $_FILES['image']['name'];
+
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('image')) {
+                $upload_data = $this->upload->data();
+                $image = 'temp_admin/assets/galeri/' . $upload_data['file_name'];
+            } else {
+                $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
+                redirect('admin/galeri');
+            }
+        }
+
+        // Data yang akan disimpan ke database, termasuk SEO
+        $data = [
+            'judul'            => $judul,
+            'deskripsi'             => $deskripsi,
+            'image'            => $image,
+            'date_created' => $date_created,
+        ];
+
+        // Simpan galeri ke database
+        $insert = $this->Galeri_model->insert_galeri($data);
+
+        if ($insert) {
+            $this->session->set_flashdata('success', 'galeri berhasil ditambahkan.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menambahkan galeri.');
+        }
+
+        redirect('admin/galeri');
+    }
+
+    // Ambil kategori list
+    $data['judul'] = 'Tambah Galeri';
+    $data['slider_galeri'] = $this->Slider_model->get_active_sliders();
+
+    // Tampilkan form tambah berita
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
+    $this->load->view('admin/tambah_galeri', $data); // View harus punya input SEO juga
+    $this->load->view('admin/footer');
+}
+
+public function edit_galeri($id) {
+    // Ambil data berita berdasarkan ID
+    $galeri = $this->Galeri_model->get_galeri_by_id($id);
+
+    if (!$galeri) {
+        $this->session->set_flashdata('error', 'galeri tidak ditemukan.');
+        return redirect('admin/berita');
+    }
+
+    // Jika form disubmit
+    if ($this->input->post()) {
+        // Ambil data dari form POST dengan XSS Filtering
+        $judul        = $this->input->post('judul', true);
+        $deskripsi       = $this->input->post('deskripsi', true);
+
+
+        // Default image (gambar lama)
+        $image = $galeri->image;
+
+        // Proses upload gambar baru (jika ada)
+        if (!empty($_FILES['image']['name'])) {
+            $config['upload_path']   = './temp_admin/assets/galeri/';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['max_size']      = 2048; // 2MB
+            $config['file_name']     = time() . '_' . $_FILES['image']['name'];
+
+            $this->load->library('upload', $config);
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('image')) {
+                $upload_data = $this->upload->data();
+                $image = 'temp_admin/assets/galeri/' . $upload_data['file_name'];
+
+                // Hapus gambar lama jika ada
+                if (!empty($galeri->image) && file_exists('./' . $galeri->image)) {
+                    unlink('./' . $galeri->image);
+                }
+            } else {
+                // Gagal upload
+                $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
+                return redirect('admin/galeri/edit/' . $id);
+            }
+        }
+
+        // Data yang akan diupdate ke database
+        $update_data = [
+            'judul'            => $judul,
+            'deskripsi'             => $deskripsi,
+            'image'            => $image,
+        ];
+
+        // Update melalui model
+        $update = $this->Galeri_model->update_galeri($id, $update_data);
+
+        if ($update) {
+            $this->session->set_flashdata('success', 'galeri berhasil diperbarui.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal memperbarui galeri.');
+        }
+
+        return redirect('admin/galeri');
+    }
+
+    // Data untuk view (jika form belum dikirim)
+    $data = [
+        'judul'             => 'Admin - Edit Galeri',
+        'galeri'            => $galeri,
+        'slider_galeri' => $this->Galeri_model->get_all_galeri(), // ambil 3 gambar
+    ];
+
+    // Tampilkan view edit
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
+    $this->load->view('admin/edit_galeri', $data);
+    $this->load->view('admin/footer');
+}
+
+
+public function hapus_galeri($id)
+{
+    $galeri = $this->Galeri_model->get_by_id($id);
+
+    if (!$galeri) {
+        $this->session->set_flashdata('error', 'Data galeri tidak ditemukan.');
+        redirect('admin/galeri');
+        return;
+    }
+
+    // Mengakses properti sebagai objek
+    if (!empty($galeri->image) && $galeri->image !== 'default.jpg') {
+        $file_path = FCPATH . $galeri->image;
+
+        if (file_exists($file_path)) {
+            unlink($file_path);
+        }
+    }
+
+    $deleted = $this->Galeri_model->delete_galeri($id);
+
+    if ($deleted) {
+        $this->session->set_flashdata('success', 'Galeri berhasil dihapus.');
+    } else {
+        $this->session->set_flashdata('error', 'Gagal menghapus galeri.');
+    }
+
+    redirect('admin/galeri');
+}
+
+
+
+// BLOCK SLIDER
+public function slides()
+{
+    // Load data dari model
+    $data['judul'] = 'Admin - Manajemen Slides';
+    $data['slides'] = $this->Slides_model->get_all_slides();
+
+    // Flash message (jika ada)
+    $data['success'] = $this->session->flashdata('success');
+    $data['error'] = $this->session->flashdata('error');
+
+    // Load view
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
+    $this->load->view('admin/slides', $data); // Buat view: slides.php
+    $this->load->view('admin/footer');
+}
+
+public function tambah_slides() {
+    // Cek apakah ada data POST yang dikirim
+    if ($_POST) {
+        $judul        = $this->input->post('judul', true);
+        $deskripsi       = $this->input->post('deskripsi', true);
+        $status       = $this->input->post('status', true);
+        $date_created = date('Y-m-d H:i:s');
+
+        // Proses upload gambar jika ada
+        $image = '';
+        if (!empty($_FILES['image']['name'])) {
+            $config['upload_path']   = './temp_admin/assets/slides/';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['max_size']      = 2048;
+            $config['file_name']     = time() . '_' . $_FILES['image']['name'];
+
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('image')) {
+                $upload_data = $this->upload->data();
+                $image = 'temp_admin/assets/slides/' . $upload_data['file_name'];
+            } else {
+                $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
+                redirect('admin/slides');
+            }
+        }
+
+        // Data yang akan disimpan ke database, termasuk SEO
+        $data = [
+            'judul'            => $judul,
+            'status'            => $status,
+            'deskripsi'             => $deskripsi,
+            'image'            => $image,
+            'date_created' => $date_created,
+        ];
+
+        // Simpan galeri ke database
+        $insert = $this->Slides_model->insert_slides($data);
+
+        if ($insert) {
+            $this->session->set_flashdata('success', 'galeri berhasil ditambahkan.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menambahkan galeri.');
+        }
+
+        redirect('admin/slides');
+    }
+
+    // Ambil kategori list
+    $data['judul'] = 'Tambah Slides';
+    $data['status_options'] = $this->Slides_model->get_enum_values('slides', 'status'); // Get enum values for status
+
+    // Tampilkan form tambah berita
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
+    $this->load->view('admin/tambah_slides', $data); // View harus punya input SEO juga
+    $this->load->view('admin/footer');
+}
+
+
+public function edit_slides($id) {
+    // Ambil data berita berdasarkan ID
+    $slides = $this->Slides_model->get_slides_by_id($id);
+
+    if (!$slides) {
+        $this->session->set_flashdata('error', 'Slides tidak ditemukan.');
+        return redirect('admin/slides');
+    }
+
+    // Jika form disubmit
+    if ($this->input->post()) {
+        // Ambil data dari form POST dengan XSS Filtering
+        $judul        = $this->input->post('judul', true);
+        $deskripsi    = $this->input->post('deskripsi', true);
+        $status       = $this->input->post('status', true); // Ambil status
+
+        // Default image (gambar lama)
+        $image = $slides->image;
+
+        // Proses upload gambar baru (jika ada)
+        if (!empty($_FILES['image']['name'])) {
+            $config['upload_path']   = './temp_admin/assets/slides/';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['max_size']      = 2048; // 2MB
+            $config['file_name']     = time() . '_' . $_FILES['image']['name'];
+
+            $this->load->library('upload', $config);
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('image')) {
+                $upload_data = $this->upload->data();
+                $image = 'temp_admin/assets/slides/' . $upload_data['file_name'];
+
+                // Hapus gambar lama jika ada
+                if (!empty($slides->image) && file_exists('./' . $slides->image)) {
+                    unlink('./' . $slides->image);
+                }
+            } else {
+                // Gagal upload
+                $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
+                return redirect('admin/slides/edit/' . $id);
+            }
+        }
+
+        // Data yang akan diupdate ke database
+        $update_data = [
+            'judul'        => $judul,
+            'deskripsi'    => $deskripsi,
+            'image'        => $image,
+            'status'       => $status, // Simpan status
+        ];
+
+        // Update melalui model
+        $update = $this->Slides_model->update_slides($id, $update_data);
+
+        if ($update) {
+            $this->session->set_flashdata('success', 'Slides berhasil diperbarui.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal memperbarui slides.');
+        }
+
+        return redirect('admin/slides');
+    }
+
+    // Data untuk view (jika form belum dikirim)
+    $data = [
+        'judul'         => 'Admin - Edit Slides',
+        'slides'        => $slides,
+    ];
+    $data['status_options'] = $this->Slides_model->get_enum_values('slides', 'status'); // Ambil opsi status
+
+    // Tampilkan view edit
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
+    $this->load->view('admin/edit_slides', $data);
+    $this->load->view('admin/footer');
+}
+
+
+
+public function hapus_slides($id)
+{
+    $slide = $this->Slides_model->get_slides_by_id($id);
+    if (!$slide) {
+        show_404();
+    }
+
+    if ($slide->image !== 'default.jpg' && file_exists($slide->image)) {
+        unlink($slide->image);
+    }
+
+    $this->Slides_model->delete_slide($id);
+    $this->session->set_flashdata('success', 'Slide berhasil dihapus.');
+    redirect('admin/slides');
 }
 
 

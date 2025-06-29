@@ -5,7 +5,15 @@ class User extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->model('User_model');
+        $this->load->model([
+        'Admin_model',
+        'Berita_model',
+        'Galeri_model',
+        'Seo_model',
+        'User_model','Slides_model', 'Logo_model'
+        ]);
+        $this->load->library(['session', 'upload']);
+        $this->load->helper(['url', 'form']);
         $this->load->library(['session', 'upload']);
         $this->load->helper(['url', 'form']);
         
@@ -31,9 +39,10 @@ class User extends CI_Controller {
         $biodata = $this->User_model->get_biodata($user_id);
         // Ambil username dari session
         $username = $this->session->userdata('username');
-
+        $logo = $this->Logo_model->get_logo(); // Ambil logo dari database
         // Ambil data lengkap user dari database
         $user = $this->User_model->get_user($username);
+        
 
         // Cek apakah data user ditemukan
         if ($user) {
@@ -43,6 +52,7 @@ class User extends CI_Controller {
             $data['username'] = $user['username'];
             $data['email']    = $user['email'];
             $data['avatar']   = $user['avatar'];
+            $data['logo'] = $logo;
             $this->load->view('user/head', $data);
             $this->load->view('user/dashboard', $data);
             $this->load->view('user/footer');

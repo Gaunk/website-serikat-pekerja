@@ -177,13 +177,13 @@
                                 <input type="password" name="password" class="form-control" required>
                             </div>
                             <div class="form-group">
-    <label for="role">Role</label>
-    <select name="role" class="form-control selectpicker" id="role" data-live-search="true" data-width="100%" required>
-        <option value="">-- Pilih Role --</option>
-        <option value="admin" data-content="<i class='fas fa-user-shield text-primary'></i> Admin">Admin</option>
-        <option value="user" data-content="<i class='fas fa-user text-secondary'></i> User">User</option>
-    </select>
-</div>
+                                <label for="role">Role</label>
+                                <select name="role" class="form-control selectpicker" id="role" data-live-search="true" data-width="100%" required>
+                                    <option value="">-- Pilih Role --</option>
+                                    <option value="admin" data-content="<i class='fas fa-user-shield text-primary'></i> Admin">Admin</option>
+                                    <option value="user" data-content="<i class='fas fa-user text-secondary'></i> User">User</option>
+                                </select>
+                            </div>
 
                             <div class="form-group">
                                 <label>Status Keanggotaan</label>

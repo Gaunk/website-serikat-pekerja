@@ -112,7 +112,6 @@
                                                         <th>Status Pekerjaan</th>
                                                         <th>Alamat</th>
                                                         <th>Keanggotaan</th>
-                                                        <th>Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -135,7 +134,6 @@
                                                                 </span>
                                                             <?php endif; ?>
                                                         </td>
-                                                        <td><?= $key['name'] ?></td>
                                                     </tr>
                                                     <?php endforeach; ?>
                                                 </tfoot>

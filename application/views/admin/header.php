@@ -77,10 +77,13 @@
                                 <div id="submenu-6" class="collapse submenu" style="">
                                         <ul class="nav flex-column">
                                             <li class="nav-item">
-                                                <a class="nav-link" href="pages/blank-page.html">Profil website </a>
+                                                <a class="nav-link" href="<?= base_url('admin/profile_website') ?>">Profil website </a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="pages/blank-page.html">SEO settings</a>
+                                                <a class="nav-link" href="<?= base_url('admin/galeri') ?>">Galeri </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="<?= base_url('admin/seo') ?>">SEO settings</a>
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link" href="pages/blank-page-header.html">Blank Page Header</a>
