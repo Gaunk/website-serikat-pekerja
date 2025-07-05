@@ -79,5 +79,5 @@ $route['auth/logout'] = 'auth/logout'; // akses: /auth/logout
 
 
 // 404 dan lainnya
-$route['404_override'] = '';
+$route['404_override'] = 'errors/page_missing';
 $route['translate_uri_dashes'] = FALSE;
