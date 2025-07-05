@@ -1258,132 +1258,185 @@ public function hapus_slides($id)
     }
 
 // METHOD CLIENT
-// Menampilkan semua client
-    public function clients() {
-        $data = [
-            'judul' => 'Admin - Clients',
-            'clients' => $this->Clients_model->get_all(),
-        ];
-        $this->load->view('admin/head', $data);
-        $this->load->view('admin/header', $data);
-        $this->load->view('clients/clients', $data);
-        $this->load->view('admin/footer');
-    }
+public function clients() {
+    $data['judul'] = 'Admin - Manajemen clients';
+    $data['clients'] = $this->Clients_model->get_all();
 
-    public function tambah_clients() {
-    // Cek apakah ada data POST yang dikirim
-    if ($_POST) {
-        $date_created = date('Y-m-d H:i:s');
+    // Ambil flashdata error dan success untuk ditampilkan di view
+    $data['error'] = $this->session->flashdata('error');
+    $data['success'] = $this->session->flashdata('success');
+
+    // Load view list galeri
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
+    $this->load->view('admin/clients', $data);
+    $this->load->view('admin/footer');
+}
+
+public function tambah_clients() {
+    // Cek apakah ada data POST yang dikirim untuk menambahkan client
+    if ($this->input->post()) {
+        // Mendapatkan waktu saat ini untuk created_at dan updated_at
+        $date_now = date('Y-m-d H:i:s');
+        $image = '';
+        $image_name = $this->input->post('image_name');  // Mendapatkan nama gambar dari form, jika ada
 
         // Proses upload gambar jika ada
-        $image = '';
         if (!empty($_FILES['image']['name'])) {
             $config['upload_path']   = './temp_admin/assets/clients/';
             $config['allowed_types'] = 'jpg|jpeg|png|gif|webp';
-            $config['max_size']      = 2048;
+            $config['max_size']      = 5048; // Maksimal 2MB
             $config['file_name']     = time() . '_' . $_FILES['image']['name'];
 
+            // Inisialisasi upload library
+            $this->load->library('upload');
             $this->upload->initialize($config);
 
             if ($this->upload->do_upload('image')) {
                 $upload_data = $this->upload->data();
                 $image = 'temp_admin/assets/clients/' . $upload_data['file_name'];
+                // Jika nama gambar kosong, kita set nama gambar default dengan nama file yang diupload
+                if (empty($image_name)) {
+                    $image_name = $upload_data['file_name'];
+                }
             } else {
+                // Jika gagal upload, tampilkan pesan error
                 $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
                 redirect('admin/clients');
+                return; // Pastikan fungsi dihentikan agar tidak melanjutkan ke proses insert
             }
         }
 
-        // Data yang akan disimpan ke database, termasuk SEO
+        // Data yang akan disimpan ke database
         $data = [
-            'image'            => $image,
-            'date_created' => $date_created,
+            'image'        => $image,
+            'image_name'   => $image_name,  // Menyimpan nama gambar
+            'created_at'   => $date_now,    // Menyimpan created_at
+            'updated_at'   => $date_now,    // Menyimpan updated_at saat pertama kali insert
         ];
 
-        // Simpan clients ke database
-        $insert = $this->clients_model->insert_clients($data);
+        // Debug: cek data yang akan disimpan
+        log_message('debug', 'Data yang akan disimpan: ' . print_r($data, true));
 
+        // Simpan client ke database
+        $insert = $this->Clients_model->insert_clients($data);
+
+        // Beri feedback kepada user
         if ($insert) {
-            $this->session->set_flashdata('success', 'clients berhasil ditambahkan.');
+            $this->session->set_flashdata('success', 'Client berhasil ditambahkan.');
         } else {
-            $this->session->set_flashdata('error', 'Gagal menambahkan clients.');
+            $this->session->set_flashdata('error', 'Gagal menambahkan client.');
         }
 
+        // Redirect ke halaman daftar client setelah insert
         redirect('admin/clients');
     }
-
 }
 
 
-    // Mengedit client berdasarkan ID
-    public function edit($id) {
-        $client = $this->Clients_model->get_client_by_id($id);
+public function edit_clients($id) {
+    // Ambil data client berdasarkan ID
+    $clients = $this->Clients_model->get_clients_by_id($id);
 
-        if (!$client) {
-            $this->session->set_flashdata('error', 'Client tidak ditemukan.');
-            return redirect('admin/clients');
-        }
-
-        if ($this->input->post()) {
-            $config['upload_path'] = './temp_admin/assets/clients/';
-            $config['allowed_types'] = 'jpg|jpeg|png|gif';
-            $config['max_size'] = 2048; // 2MB
-            $config['file_name'] = time() . '_' . $_FILES['image']['name'];
-
-            $this->upload->initialize($config);
-
-            // Cek apakah ada file gambar baru
-            if (!empty($_FILES['image']['name'])) {
-                if ($this->upload->do_upload('image')) {
-                    $upload_data = $this->upload->data();
-                    $image = 'temp_admin/assets/clients/' . $upload_data['file_name'];
-
-                    // Hapus gambar lama jika ada
-                    if (file_exists('./' . $client['image'])) {
-                        unlink('./' . $client['image']);
-                    }
-
-                    $data = [
-                        'image' => $image,
-                    ];
-
-                    $this->Clients_model->update_client($id, $data);
-                    $this->session->set_flashdata('success', 'Client berhasil diperbarui.');
-                    return redirect('admin/clients');
-                } else {
-                    $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
-                }
-            }
-        }
-
-        $data = [
-            'judul' => 'Admin - Edit Client',
-            'client' => $client,
-        ];
-
-        $this->load->view('admin/head', $data);
-        $this->load->view('admin/header', $data);
-        $this->load->view('clients/edit_client', $data);
-        $this->load->view('admin/footer');
+    if (!$clients) {
+        $this->session->set_flashdata('error', 'Client tidak ditemukan.');
+        return redirect('admin/clients');
     }
 
-    // Menghapus client berdasarkan ID
-    public function delete($id) {
-        $client = $this->Clients_model->get_client_by_id($id);
+    // Jika form disubmit
+    if ($this->input->post()) {
+        // Ambil data dari form POST dengan XSS Filtering
+        $image_name = $this->input->post('image_name', true);
 
-        if (!$client) {
-            $this->session->set_flashdata('error', 'Client tidak ditemukan.');
-        } else {
-            // Hapus gambar lama jika ada
-            if (file_exists('./' . $client['image'])) {
-                unlink('./' . $client['image']);
+        // Default image (gambar lama)
+        $image = $clients->image;
+
+        // Proses upload gambar baru (jika ada)
+        if (!empty($_FILES['image']['name'])) {
+            $config['upload_path']   = './temp_admin/assets/clients/';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif|webp';
+            $config['max_size']      = 2048; // 2MB
+            $config['file_name']     = time() . '_' . $_FILES['image']['name'];
+
+            $this->load->library('upload', $config);
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('image')) {
+                $upload_data = $this->upload->data();
+                $image = 'temp_admin/assets/clients/' . $upload_data['file_name'];
+
+                // Hapus gambar lama jika ada
+                if (!empty($clients->image) && file_exists('./' . $clients->image)) {
+                    unlink('./' . $clients->image); // Menghapus gambar lama dari server
+                }
+            } else {
+                // Gagal upload
+                $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
+                return redirect('admin/clients/edit/' . $id); // Redirect kembali ke halaman edit
             }
+        }
 
-            $this->Clients_model->delete_client($id);
-            $this->session->set_flashdata('success', 'Client berhasil dihapus.');
+        // Data yang akan diupdate ke database
+        $update_data = [
+            'image_name' => $image_name, // Menyimpan nama gambar yang diinputkan
+            'image'      => $image,      // Menyimpan path gambar
+            'updated_at' => date('Y-m-d H:i:s'), // Waktu update
+        ];
+
+        // Update client melalui model
+        $update = $this->Clients_model->update_clients($id, $update_data);
+
+        if ($update) {
+            $this->session->set_flashdata('success', 'Client berhasil diperbarui.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal memperbarui client.');
         }
 
         return redirect('admin/clients');
     }
 
+    // Data untuk view (jika form belum dikirim)
+    $data = [
+        'judul'    => 'Admin - Edit Client', // Judul halaman
+        'clients'   => $clients,              // Data client yang akan diedit
+    ];
+
+    // Tampilkan view edit
+    $this->load->view('admin/head', $data);
+    $this->load->view('admin/header', $data);
+    $this->load->view('admin/edit_clients', $data);
+    $this->load->view('admin/footer');
+}
+
+
+
+public function hapus_clients($id)
+{
+    $clients = $this->Clients_model->get_by_id($id);
+
+    if (!$clients) {
+        $this->session->set_flashdata('error', 'Data clients tidak ditemukan.');
+        redirect('admin/clients');
+        return;
+    }
+
+    // Mengakses properti sebagai objek
+    if (!empty($clients->image) && $clients->image !== 'default.jpg') {
+        $file_path = FCPATH . $clients->image;
+
+        if (file_exists($file_path)) {
+            unlink($file_path);
+        }
+    }
+
+    $deleted = $this->Clients_model->delete_clients($id);
+
+    if ($deleted) {
+        $this->session->set_flashdata('success', 'clients berhasil dihapus.');
+    } else {
+        $this->session->set_flashdata('error', 'Gagal menghapus clients.');
+    }
+
+    redirect('admin/clients');
+}
 }

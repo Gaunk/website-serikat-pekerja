@@ -53,7 +53,7 @@ table td {
                                  
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                     <!-- Button to Open Modal for Adding New clients with Icon -->
-                                    <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#tambahModal">
+                                    <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#tambahModalClients">
                                         <i class="fas fa-plus"></i> Tambah clients
                                     </button>
                                     <div class="card">
@@ -64,6 +64,7 @@ table td {
                                                     <thead>
                                                         <tr>
                                                             <th>No</th>
+                                                            <th>Nama Image</th>
                                                             <th>Gambar</th>
                                                             <th>Action</th>
                                                         </tr>
@@ -73,21 +74,22 @@ table td {
                                                         <?php foreach ($clients as $b) : ?>
                                                             <tr>
                                                                 <td><?= $no++ ?></td>
+                                                                <td><?= $b['image_name'] ?></td>
                                                                 <td>
-                                                                    <?php if ($b->image): ?>
-                                                                        <img src="<?= base_url($b->image) ?>" alt="clients" class="img-thumbnail" style="max-width: 100px; height: auto;" />
+                                                                    <?php if ($b['image']): ?>
+                                                                        <img src="<?= base_url($b['image']) ?>" alt="Gambar Berita" class="img-thumbnail" style="max-width: 100px; height: auto;" />
                                                                     <?php else: ?>
                                                                         <span>No Image</span>
                                                                     <?php endif; ?>
                                                                 </td>
                                                                 <td>
                                                                 <!-- Edit Button with Icon -->
-                                                                <a href="<?= base_url('admin/edit_clients/' . $b->id) ?>" class="btn btn-success btn-sm">
+                                                                <a href="<?= base_url('admin/edit_clients/' . $b['id']) ?>" class="btn btn-success btn-sm">
                                                                     <i class="fas fa-edit"></i> Edit
                                                                 </a>
 
                                                                 <!-- Delete Button with Icon -->
-                                                                <a href="<?= base_url('admin/hapus_clients/' . $b->id) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin?')">
+                                                                <a href="<?= base_url('admin/hapus_clients/' . $b['id']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin?')">
                                                                     <i class="fas fa-trash-alt"></i> Hapus
                                                                 </a>
                                                             </td>
@@ -111,23 +113,27 @@ table td {
 
 <!-- BAWAHNYA FOOTER -->
 <!-- Modal for Tambah clients -->
-<div class="modal fade" id="tambahModal" tabindex="-1" role="dialog" aria-labelledby="tambahModalLabel" aria-hidden="true">
+<div class="modal fade" id="tambahModalClients" tabindex="-1" role="dialog" aria-labelledby="tambahModalClientsLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <!-- Form for adding new client -->
-            <form action="<?= base_url('admin/clients') ?>" method="post" enctype="multipart/form-data">
+            <form action="<?= base_url('admin/tambah_clients') ?>" method="post" enctype="multipart/form-data">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="tambahModalLabel">Tambah Client</h5>
+                    <h5 class="modal-title" id="tambahModalClientsLabel">Tambah Client</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
 
                 <div class="modal-body">
+                    <!-- Judul -->
+                    <div class="form-group">
+                        <label for="image_name">Nama Gambar</label>
+                        <input type="text" class="form-control" id="image_name" name="image_name" required>
+                    </div>
                     <!-- Gambar -->
                     <div class="form-group" id="image-upload-section">
-                        <label for="image">Gambar</label>
-                        <input type="file" class="form-control-file" id="image" name="image" required>
+                        <input type="file" class="form-control-file" id="image_name" name="image_name" required>
                     </div>
                 </div>
 

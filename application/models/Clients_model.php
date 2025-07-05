@@ -9,8 +9,11 @@ class Clients_model extends CI_Model {
 
     // Menambahkan client ke database
     public function insert_clients($data) {
-        return $this->db->insert('clients', $data);  // Pastikan 'clients' adalah nama tabel yang benar
-    }
+    // Memasukkan data ke database
+    $this->db->insert('clients', $data);  // Asumsikan tabel 'clients' memiliki kolom 'created_at' dan 'updated_at'
+    return $this->db->affected_rows() > 0;
+}
+
 
     // Mendapatkan semua data client
     public function get_all() {
