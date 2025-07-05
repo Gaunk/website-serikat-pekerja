@@ -33,7 +33,7 @@
 <!-- basic form -->
 <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12 col-12">
     <div class="card">
-        <h5 class="card-header">Edit Berita</h5>
+        <h5 class="card-header">Edit Galeri</h5>
         <div class="card-body">
             <form action="<?= base_url('admin/edit_galeri/' . $galeri->id) ?>" method="POST" enctype="multipart/form-data" id="basicform">
 

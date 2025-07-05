@@ -11,7 +11,7 @@ class Admin extends CI_Controller {
         'Berita_model',
         'Galeri_model',
         'Seo_model',
-        'User_model','Slides_model', 'Logo_model'
+        'User_model','Slides_model', 'Logo_model', 'Menu_model', 'Clients_model'
         ]);
         $this->load->library(['session', 'upload']);
         $this->load->helper(['url', 'form']);
@@ -93,7 +93,7 @@ class Admin extends CI_Controller {
 
         if (!empty($_FILES['avatar']['name'])) {
             $config['upload_path']   = './temp_admin/assets/images/avatars/';
-            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif|webp';
             $config['max_size']      = 2048;
             $config['file_name']     = $username . '_' . time();
 
@@ -330,7 +330,7 @@ public function hapus_pengguna($id) {
     if (!empty($_FILES['avatar']['name'])) {
         // Set upload configuration
         $config['upload_path'] = './temp_admin/assets/images/avatars/';
-        $config['allowed_types'] = 'jpg|jpeg|png|gif'; // Allowed image types
+        $config['allowed_types'] = 'jpg|jpeg|png|gif|webp'; // Allowed image types
         $config['max_size'] = 2048; // Max file size (2MB)
         $config['file_name'] = $username . '_' . time(); // Unique file name using username and timestamp
 
@@ -422,7 +422,7 @@ public function tambah_berita() {
         $image = '';
         if (!empty($_FILES['image']['name'])) {
             $config['upload_path']   = './temp_admin/assets/berita/';
-            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif|webp';
             $config['max_size']      = 2048;
             $config['file_name']     = time() . '_' . $_FILES['image']['name'];
 
@@ -433,7 +433,7 @@ public function tambah_berita() {
                 $image = 'temp_admin/assets/berita/' . $upload_data['file_name'];
             } else {
                 $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
-                redirect('admin/berita/tambah');
+                redirect('admin/berita');
             }
         }
 
@@ -499,7 +499,7 @@ public function edit_berita($id) {
         // Proses upload gambar baru (jika ada)
         if (!empty($_FILES['image']['name'])) {
             $config['upload_path']   = './temp_admin/assets/berita/';
-            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif|webp';
             $config['max_size']      = 2048; // 2MB
             $config['file_name']     = time() . '_' . $_FILES['image']['name'];
 
@@ -517,7 +517,7 @@ public function edit_berita($id) {
             } else {
                 // Gagal upload
                 $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
-                return redirect('admin/berita/edit/' . $id);
+                return redirect('admin/edit_berita/' . $id);
             }
         }
 
@@ -559,6 +559,7 @@ public function edit_berita($id) {
     $this->load->view('berita/edit_berita', $data);
     $this->load->view('admin/footer');
 }
+
 
 
 
@@ -758,7 +759,7 @@ public function profile_website()
     // Jika upload gambar baru
     if (!empty($_FILES['image']['name'])) {
         $config['upload_path']   = './temp_admin/assets/logo/';
-        $config['allowed_types'] = 'jpg|jpeg|png|gif';
+        $config['allowed_types'] = 'jpg|jpeg|png|gif|webp';
         $config['max_size']      = 4048;
         $config['file_name']     = time() . '_' . $_FILES['image']['name'];
 
@@ -825,7 +826,7 @@ public function tambah_galeri() {
         $image = '';
         if (!empty($_FILES['image']['name'])) {
             $config['upload_path']   = './temp_admin/assets/galeri/';
-            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif|webp';
             $config['max_size']      = 2048;
             $config['file_name']     = time() . '_' . $_FILES['image']['name'];
 
@@ -893,7 +894,7 @@ public function edit_galeri($id) {
         // Proses upload gambar baru (jika ada)
         if (!empty($_FILES['image']['name'])) {
             $config['upload_path']   = './temp_admin/assets/galeri/';
-            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif|webp';
             $config['max_size']      = 2048; // 2MB
             $config['file_name']     = time() . '_' . $_FILES['image']['name'];
 
@@ -1011,7 +1012,7 @@ public function tambah_slides() {
         $image = '';
         if (!empty($_FILES['image']['name'])) {
             $config['upload_path']   = './temp_admin/assets/slides/';
-            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif|webp';
             $config['max_size']      = 2048;
             $config['file_name']     = time() . '_' . $_FILES['image']['name'];
 
@@ -1081,7 +1082,7 @@ public function edit_slides($id) {
         // Proses upload gambar baru (jika ada)
         if (!empty($_FILES['image']['name'])) {
             $config['upload_path']   = './temp_admin/assets/slides/';
-            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif|webp';
             $config['max_size']      = 2048; // 2MB
             $config['file_name']     = time() . '_' . $_FILES['image']['name'];
 
@@ -1155,6 +1156,234 @@ public function hapus_slides($id)
     redirect('admin/slides');
 }
 
+// Menampilkan halaman daftar menu
+    public function menu() {
+        $data = [
+            'judul' => 'Admin - Menu',
+            'menu'  => $this->Menu_model->get_all(),
+        ];
 
+        $this->load->view('admin/head', $data);
+        $this->load->view('admin/header', $data);
+        $this->load->view('menu/menu', $data);
+        $this->load->view('admin/footer');
+    }
+
+    // Menyimpan menu baru
+    public function tambah_menu() {
+        if ($_POST) {
+            $data = [
+                'title'   => $this->input->post('title', true),
+                'slug'    => url_title($this->input->post('title'), 'dash', true),
+            ];
+
+            $this->Menu_model->insert($data);
+            $this->session->set_flashdata('success', 'Menu berhasil disimpan.');
+        }
+        redirect('admin/menu');
+    }
+
+    // Menampilkan form edit
+    public function edit_menu($id) {
+        $menu = $this->Menu_model->get_menu_by_id($id);
+
+        if (!$menu) {
+            show_404();
+        }
+
+        $data = [
+            'judul' => 'Edit Menu',
+            'menu'  => $menu
+        ];
+
+        $this->load->view('admin/head', $data);
+        $this->load->view('admin/header', $data);
+        $this->load->view('menu/edit_menu', $data);
+        $this->load->view('admin/footer');
+    }
+
+    // Memperbarui data menu
+    public function update_menu() {
+        $id      = $this->input->post('id');
+        $title   = $this->input->post('title', true);
+        $slug    = $this->input->post('slug', true);
+
+        if (empty($id) || empty($title) || empty($slug)) {
+            $this->session->set_flashdata('error', 'Semua field harus diisi!');
+            redirect('admin/edit_menu/' . $id);
+            return;
+        }
+
+        $data = [
+            'title'   => trim($title),
+            'slug'    => trim($slug),
+        ];
+
+        $update = $this->Menu_model->update_menu($id, $data);
+
+        if ($update) {
+            $this->session->set_flashdata('success', 'Menu berhasil diperbarui.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal memperbarui menu.');
+        }
+
+        redirect('admin/menu');
+    }
+
+     // FRONTEND: Menampilkan menu berdasarkan slug
+    public function menu_view($slug) {
+        $menu = $this->Menu_model->get_by_slug($slug);
+
+        if (!$menu) {
+            show_404();
+        }
+
+        $data = [
+            'title' => $menu->title,
+            'menu' => $menu
+        ];
+
+        // Tampilan frontend
+        $this->load->view('home/head', $data);
+        $this->load->view('home/header', $data);
+        $this->load->view('home', $data);
+        $this->load->view('home/footer');
+    }
+
+    // Menghapus menu
+    public function delete_menu($id) {
+        $this->Menu_model->delete_menu($id);
+        $this->session->set_flashdata('success', 'Data menu berhasil dihapus.');
+        redirect('admin/menu');
+    }
+
+// METHOD CLIENT
+// Menampilkan semua client
+    public function clients() {
+        $data = [
+            'judul' => 'Admin - Clients',
+            'clients' => $this->Clients_model->get_all(),
+        ];
+        $this->load->view('admin/head', $data);
+        $this->load->view('admin/header', $data);
+        $this->load->view('clients/clients', $data);
+        $this->load->view('admin/footer');
+    }
+
+    public function tambah_clients() {
+    // Cek apakah ada data POST yang dikirim
+    if ($_POST) {
+        $date_created = date('Y-m-d H:i:s');
+
+        // Proses upload gambar jika ada
+        $image = '';
+        if (!empty($_FILES['image']['name'])) {
+            $config['upload_path']   = './temp_admin/assets/clients/';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif|webp';
+            $config['max_size']      = 2048;
+            $config['file_name']     = time() . '_' . $_FILES['image']['name'];
+
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('image')) {
+                $upload_data = $this->upload->data();
+                $image = 'temp_admin/assets/clients/' . $upload_data['file_name'];
+            } else {
+                $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
+                redirect('admin/clients');
+            }
+        }
+
+        // Data yang akan disimpan ke database, termasuk SEO
+        $data = [
+            'image'            => $image,
+            'date_created' => $date_created,
+        ];
+
+        // Simpan clients ke database
+        $insert = $this->clients_model->insert_clients($data);
+
+        if ($insert) {
+            $this->session->set_flashdata('success', 'clients berhasil ditambahkan.');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menambahkan clients.');
+        }
+
+        redirect('admin/clients');
+    }
+
+}
+
+
+    // Mengedit client berdasarkan ID
+    public function edit($id) {
+        $client = $this->Clients_model->get_client_by_id($id);
+
+        if (!$client) {
+            $this->session->set_flashdata('error', 'Client tidak ditemukan.');
+            return redirect('admin/clients');
+        }
+
+        if ($this->input->post()) {
+            $config['upload_path'] = './temp_admin/assets/clients/';
+            $config['allowed_types'] = 'jpg|jpeg|png|gif';
+            $config['max_size'] = 2048; // 2MB
+            $config['file_name'] = time() . '_' . $_FILES['image']['name'];
+
+            $this->upload->initialize($config);
+
+            // Cek apakah ada file gambar baru
+            if (!empty($_FILES['image']['name'])) {
+                if ($this->upload->do_upload('image')) {
+                    $upload_data = $this->upload->data();
+                    $image = 'temp_admin/assets/clients/' . $upload_data['file_name'];
+
+                    // Hapus gambar lama jika ada
+                    if (file_exists('./' . $client['image'])) {
+                        unlink('./' . $client['image']);
+                    }
+
+                    $data = [
+                        'image' => $image,
+                    ];
+
+                    $this->Clients_model->update_client($id, $data);
+                    $this->session->set_flashdata('success', 'Client berhasil diperbarui.');
+                    return redirect('admin/clients');
+                } else {
+                    $this->session->set_flashdata('error', 'Gagal upload gambar: ' . $this->upload->display_errors());
+                }
+            }
+        }
+
+        $data = [
+            'judul' => 'Admin - Edit Client',
+            'client' => $client,
+        ];
+
+        $this->load->view('admin/head', $data);
+        $this->load->view('admin/header', $data);
+        $this->load->view('clients/edit_client', $data);
+        $this->load->view('admin/footer');
+    }
+
+    // Menghapus client berdasarkan ID
+    public function delete($id) {
+        $client = $this->Clients_model->get_client_by_id($id);
+
+        if (!$client) {
+            $this->session->set_flashdata('error', 'Client tidak ditemukan.');
+        } else {
+            // Hapus gambar lama jika ada
+            if (file_exists('./' . $client['image'])) {
+                unlink('./' . $client['image']);
+            }
+
+            $this->Clients_model->delete_client($id);
+            $this->session->set_flashdata('success', 'Client berhasil dihapus.');
+        }
+
+        return redirect('admin/clients');
+    }
 
 }

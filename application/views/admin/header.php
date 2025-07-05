@@ -51,7 +51,7 @@
                                 <div id="submenu-3" class="collapse submenu" style="">
                                     <ul class="nav flex-column">
                                         <li class="nav-item">
-                                            <a class="nav-link" href="pages/chart-c3.html">Tambah Menu</a>
+                                            <a class="nav-link" href="<?= base_url('admin/menu') ?>">Tambah Menu</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="pages/chart-chartist.html">Nama item</a>
@@ -83,10 +83,13 @@
                                                 <a class="nav-link" href="<?= base_url('admin/galeri') ?>">Galeri </a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="<?= base_url('admin/seo') ?>">SEO settings</a>
+                                                <a class="nav-link" href="<?= base_url('admin/clients') ?>">Clients </a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="pages/blank-page-header.html">Blank Page Header</a>
+                                                <a class="nav-link" href="<?= base_url('admin/slides') ?>">Slides</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="<?= base_url('admin/seo') ?>">SEO settings</a>
                                             </li>
                                             
                                         </ul>

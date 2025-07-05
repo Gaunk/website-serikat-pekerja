@@ -1,7 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-$route['default_controller'] = 'home';
 
 // ROUTING UNTUK ADMIN
 // Untuk akses http://localhost/re/admin
@@ -25,7 +24,7 @@ $route['admin/change_password'] = 'admin/admin/change_password';
 // ROUTING UNTUK BERITA
 $route['admin/berita'] = 'admin/admin/berita';  // admin dashboard page
 $route['admin/tambah_berita'] = 'admin/admin/tambah_berita';  // Page to add new admin
-$route['admin/edit_berita/(:num)'] = 'admin/admin/edit_berita/$1';  // Edit page for a specific admin (if needed)
+$route['admin/edit_berita/(:num)'] = 'admin/admin/edit_berita/$1'; // edit berita
 $route['admin/hapus_berita/(:num)'] = 'admin/admin/hapus_berita/$1';  // Delete page for a specific admin (if needed)
 $route['admin/detail/(:any)'] = 'admin/detail/$1';
 // 
@@ -39,11 +38,27 @@ $route['admin/profile_website'] = 'admin/admin/profile_website';
 $route['admin/insert_website'] = 'admin/admin/insert_website';
 $route['admin/save_logo'] = 'admin/admin/save_logo';
 // 
+$route['home/(:any)'] = 'home/index/$1'; // menangani slug menu
+$route['default_controller'] = 'home';
 
+$route['admin/menu'] = 'admin/admin/menu';
+$route['admin/tambah_menu'] = 'admin/admin/tambah_menu';
+$route['admin/edit_menu/(:num)'] = 'admin/admin/edit_menu/$1';
+$route['admin/delete_menu/(:num)'] = 'admin/admin/delete_menu/$1';
+$route['admin/update_menu'] = 'admin/admin/update_menu';
+
+//
+$route['admin/generator'] = 'admin/admin/generator';
+// 
 $route['admin/galeri'] = 'admin/admin/galeri';
 $route['admin/tambah_galeri'] = 'admin/admin/tambah_galeri';
 $route['admin/edit_galeri/(:num)'] = 'admin/admin/edit_galeri/$1';
 $route['admin/hapus_galeri/(:num)'] = 'admin/admin/hapus_galeri/$1';
+// 
+$route['admin/clients'] = 'admin/admin/clients';
+$route['admin/tambah_clients'] = 'admin/admin/tambah_clients';
+$route['admin/edit_clients/(:num)'] = 'admin/admin/edit_clients/$1';
+$route['admin/hapus_clients/(:num)'] = 'admin/admin/hapus_clients/$1';
 // 
 $route['admin/slides'] = 'admin/admin/slides';
 $route['admin/tambah_slides'] = 'admin/admin/tambah_slides';

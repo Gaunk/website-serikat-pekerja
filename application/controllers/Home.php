@@ -9,7 +9,7 @@ class Home extends CI_Controller {
         'Berita_model',
         'Galeri_model',
         'Seo_model',
-        'User_model','Slides_model', 'Logo_model'
+        'User_model','Slides_model', 'Logo_model', 'Menu_model'
         ]);
         $this->load->library(['session', 'upload']);
         $this->load->helper(['url', 'form']);
@@ -19,26 +19,46 @@ class Home extends CI_Controller {
 
     }
 
-  public function index()
-    {
-        // Ambil data berita dan kategori
-        $berita   = $this->Berita_model->get_all_berita();
-        // Ambil data profil website
-        $profile = $this->Seo_model->get_profile();
-        $logo = $this->Logo_model->get_logo(); // Ambil logo dari database
-        // Siapkan data untuk view
+  public function index($slug = null)
+{
+    $berita   = $this->Berita_model->get_all_berita();
+    $profile  = $this->Seo_model->get_profile();
+    $logo     = $this->Logo_model->get_logo();
+
+    // Jika ada slug, tampilkan halaman menu
+    if ($slug !== null) {
+        $menu = $this->Menu_model->get_by_slug($slug);
+        if (!$menu) show_404();
+
         $data = [
-            'judul'            => 'Beranda',
-            'berita'           => $berita,
-            'profile'          => $profile,
-            'logo'          => $logo,
+            'judul'   => $menu->title,
+            'menu'    => $menu,
+            'content' => $menu->content,
+            'berita'  => $berita,
+            'profile' => $profile,
+            'logo'    => $logo,
         ];
 
-        // Load view dengan semua data
         $this->load->view('home/head', $data);
         $this->load->view('home/header', $data);
-        $this->load->view('home', $data);
+        $this->load->view('home/menu_view', $data); // tampilkan konten halaman dinamis
         $this->load->view('home/footer');
+        return;
     }
+
+    // Jika tidak ada slug, tampilkan halaman utama (beranda)
+    $data = [
+        'judul'   => 'Beranda',
+        'berita'  => $berita,
+        'profile' => $profile,
+        'logo'    => $logo,
+    ];
+
+    $this->load->view('home/head', $data);
+    $this->load->view('home/header', $data);
+    $this->load->view('home', $data); // tampilkan homepage
+    $this->load->view('home/footer');
+}
+
 
 }

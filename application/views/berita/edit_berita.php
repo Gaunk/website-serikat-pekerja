@@ -36,7 +36,6 @@
         <h5 class="card-header">Edit Berita</h5>
         <div class="card-body">
             <form action="<?= base_url('admin/edit_berita/' . $berita['id']) ?>" method="POST" enctype="multipart/form-data" id="basicform" data-parsley-validate>
-
                 <!-- ID Tersembunyi -->
                 <input type="hidden" name="id" value="<?= $berita['id']; ?>">
 
@@ -82,7 +81,6 @@
                     <small class="form-text text-muted">Maksimal 60 karakter</small>
                 </div>
 
-
                 <!-- Meta Description -->
                 <div class="form-group">
                     <label for="meta_description">Meta Description</label>
@@ -97,7 +95,6 @@
                     ><?= htmlspecialchars($berita['meta_description']) ?></textarea>
                     <small class="form-text text-muted">Maksimal 160 karakter</small>
                 </div>
-
 
                 <!-- Meta Keywords -->
                 <div class="form-group">
@@ -116,7 +113,6 @@
                     var input = document.querySelector('#meta_keywords');
                     new Tagify(input);
                 </script>
-
 
                 <!-- Kategori -->
                 <div class="form-group">
@@ -167,6 +163,7 @@
                     <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                 </div>
             </form>
+
 
         </div>
     </div>
