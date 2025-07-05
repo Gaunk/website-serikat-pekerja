@@ -98,78 +98,17 @@
           </script>
 
           <div class="swiper-wrapper">
+              <?php  foreach ($clients as $cl) { ?>
             <div class="swiper-slide">
               <div class="client-logo">
-                <img src="<?= base_url('temp_home/') ?>assets/img/clients/clients-1.webp" class="img-fluid" alt="">
+                <?php if ($cl['image']): ?>
+                     <img src="<?= base_url($cl['image']) ?>" alt="Gambar Berita" class="img-fluid"/>
+                <?php else: ?>
+                     <span>No Image</span>
+                <?php endif; ?>
               </div>
             </div><!-- End Client Item -->
-
-            <div class="swiper-slide">
-              <div class="client-logo">
-                <img src="<?= base_url('temp_home/') ?>assets/img/clients/clients-2.webp" class="img-fluid" alt="">
-              </div>
-            </div><!-- End Client Item -->
-
-            <div class="swiper-slide">
-              <div class="client-logo">
-                <img src="<?= base_url('temp_home/') ?>assets/img/clients/clients-3.webp" class="img-fluid" alt="">
-              </div>
-            </div><!-- End Client Item -->
-
-            <div class="swiper-slide">
-              <div class="client-logo">
-                <img src="<?= base_url('temp_home/') ?>assets/img/clients/clients-4.webp" class="img-fluid" alt="">
-              </div>
-            </div><!-- End Client Item -->
-
-            <div class="swiper-slide">
-              <div class="client-logo">
-                <img src="<?= base_url('temp_home/') ?>assets/img/clients/clients-5.webp" class="img-fluid" alt="">
-              </div>
-            </div><!-- End Client Item -->
-
-            <div class="swiper-slide">
-              <div class="client-logo">
-                <img src="<?= base_url('temp_home/') ?>assets/img/clients/clients-6.webp" class="img-fluid" alt="">
-              </div>
-            </div><!-- End Client Item -->
-
-            <div class="swiper-slide">
-              <div class="client-logo">
-                <img src="<?= base_url('temp_home/') ?>assets/img/clients/clients-1.webp" class="img-fluid" alt="">
-              </div>
-            </div><!-- End Client Item -->
-
-            <div class="swiper-slide">
-              <div class="client-logo">
-                <img src="<?= base_url('temp_home/') ?>assets/img/clients/clients-2.webp" class="img-fluid" alt="">
-              </div>
-            </div><!-- End Client Item -->
-
-            <div class="swiper-slide">
-              <div class="client-logo">
-                <img src="<?= base_url('temp_home/') ?>assets/img/clients/clients-3.webp" class="img-fluid" alt="">
-              </div>
-            </div><!-- End Client Item -->
-
-            <div class="swiper-slide">
-              <div class="client-logo">
-                <img src="<?= base_url('temp_home/') ?>assets/img/clients/clients-4.webp" class="img-fluid" alt="">
-              </div>
-            </div><!-- End Client Item -->
-
-            <div class="swiper-slide">
-              <div class="client-logo">
-                <img src="<?= base_url('temp_home/') ?>assets/img/clients/clients-5.webp" class="img-fluid" alt="">
-              </div>
-            </div><!-- End Client Item -->
-
-            <div class="swiper-slide">
-              <div class="client-logo">
-                <img src="<?= base_url('temp_home/') ?>assets/img/clients/clients-6.webp" class="img-fluid" alt="">
-              </div>
-            </div><!-- End Client Item -->
-
+            <?php } ?> 
           </div>
 
         </div>

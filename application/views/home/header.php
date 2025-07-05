@@ -21,7 +21,7 @@
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-      <a class="btn-getstarted" href="index.html#about">Get Started</a>
+      <a class="btn-getstarted" href="<?= base_url('auth/register') ?>">Bergabung</a>
 
     </div>
   </header>

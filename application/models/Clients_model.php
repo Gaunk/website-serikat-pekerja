@@ -16,7 +16,7 @@ class Clients_model extends CI_Model {
 
 
     // Mendapatkan semua data client
-    public function get_all() {
+    public function get_all_clients() {
         return $this->db->get('clients')->result_array();
     }
 

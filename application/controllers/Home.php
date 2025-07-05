@@ -9,7 +9,7 @@ class Home extends CI_Controller {
         'Berita_model',
         'Galeri_model',
         'Seo_model',
-        'User_model','Slides_model', 'Logo_model', 'Menu_model'
+        'User_model','Slides_model', 'Logo_model', 'Menu_model', 'Clients_model'
         ]);
         $this->load->library(['session', 'upload']);
         $this->load->helper(['url', 'form']);
@@ -24,7 +24,7 @@ class Home extends CI_Controller {
     $berita   = $this->Berita_model->get_all_berita();
     $profile  = $this->Seo_model->get_profile();
     $logo     = $this->Logo_model->get_logo();
-
+    $clients   = $this->Clients_model->get_all_clients();
     // Jika ada slug, tampilkan halaman menu
     if ($slug !== null) {
         $menu = $this->Menu_model->get_by_slug($slug);
@@ -37,6 +37,7 @@ class Home extends CI_Controller {
             'berita'  => $berita,
             'profile' => $profile,
             'logo'    => $logo,
+            'clients' => $clients
         ];
 
         $this->load->view('home/head', $data);
@@ -52,6 +53,7 @@ class Home extends CI_Controller {
         'berita'  => $berita,
         'profile' => $profile,
         'logo'    => $logo,
+        'clients' => $clients
     ];
 
     $this->load->view('home/head', $data);

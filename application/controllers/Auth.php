@@ -6,7 +6,7 @@ class Auth extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('Admin_model');  // Assuming User_model is your model
-        $this->load->model('User_model');  // Assuming User_model is your model
+        $this->load->model('User_model', 'Logo_model');  // Assuming User_model is your model
         $this->load->library('session');
         $this->load->helper(['url', 'form']);
     }
@@ -96,14 +96,15 @@ class Auth extends CI_Controller {
                 $this->session->set_flashdata('error', 'Username sudah terdaftar.');
                 redirect('auth/register');
             }
-
+            $logo     = $this->Logo_model->get_logo();
             // Siapkan data user baru
             $data = [
                 'username' => $username,
                 'password' => password_hash($password, PASSWORD_DEFAULT),
                 'role'     => 'user',
                 'avatar'   => 'default.png', // gunakan default avatar
-                'is_blocked' => 0 // Default to not blocked
+                'is_blocked' => 0, // Default to not blocked
+                'logo'    => $logo,
             ];
 
             // Simpan user baru

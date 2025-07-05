@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign Up</title>
   <link href="/css/style.css" rel="stylesheet">
+  <!-- Favicons -->
+  <?php if (!empty($logo->image)): ?>
+    <link rel="icon" type="image/png" href="<?= base_url($logo->image) ?>">
+  <?php else: ?>
+      <!-- Fallback jika logo tidak ada -->
+      <link rel="icon" href="<?= base_url('favicon.png') ?>">
+  <?php endif; ?>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center py-12 sm:px-6 lg:px-8">
@@ -74,7 +81,7 @@
           <button type="submit"
             class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white"
             style="background-color: #0097b4; hover:bg-[#007f9e]; focus:ring-[#0097b4]">
-            Sign in
+            Bergabung
           </button>
 
 

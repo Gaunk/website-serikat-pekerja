@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sign In</title>
   <link href="/css/style.css" rel="stylesheet" />
+   <!-- Favicons -->
+  <?php if (!empty($logo->image)): ?>
+    <link rel="icon" type="image/png" href="<?= base_url($logo->image) ?>">
+<?php else: ?>
+    <!-- Fallback jika logo tidak ada -->
+    <link rel="icon" href="<?= base_url('favicon.png') ?>">
+<?php endif; ?>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <!-- SweetAlert 2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

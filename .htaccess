@@ -1,25 +1,4 @@
-# Aktifkan mod_rewrite
 RewriteEngine On
-
-# Cegah akses ke folder 'application', 'system', 'user_guide'
-RewriteRule ^(application|system|user_guide|temp_admin|temp_home|temp_user|temp_login)/ - [R=404,L]
-
-# Jika URL tidak ditemukan, arahkan ke halaman 404
-ErrorDocument 404 /404.html
-
-# Aturan untuk menghapus index.php dari URL
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ index.php/$1 [L]
-
-# Melindungi file .htaccess dari akses langsung
-<Files .htaccess>
-    Order Deny,Allow
-    Deny from all
-</Files>
-
-# Mencegah akses ke file .env (jika ada)
-<Files .env>
-    Order Deny,Allow
-    Deny from all
-</Files>

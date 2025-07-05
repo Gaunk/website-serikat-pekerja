@@ -1268,7 +1268,7 @@ public function clients() {
         'judul' => 'Admin - Manajemen clients',
         'username' => $this->session->userdata('username'),
         'avatar'   => $this->session->userdata('avatar'),
-        'clients' => $this->Clients_model->get_all()
+        'clients' => $this->Clients_model->get_all_clients()
     ];
     // Load view list galeri
     $this->load->view('admin/head', $data);
@@ -1403,12 +1403,11 @@ public function edit_clients($id) {
     $data = [
         'judul'    => 'Admin - Edit Client', // Judul halaman
         'clients'   => $clients,              // Data client yang akan diedit      
-        'users'    => $users,  // Menambahkan data pengguna
         'username' => $this->session->userdata('username'),
         'avatar'   => $this->session->userdata('avatar'),
     ];
 
-    // Tampilkan view edit
+    // // Tampilkan view edit
     $this->load->view('admin/head', $data);
     $this->load->view('admin/header', $data);
     $this->load->view('admin/edit_clients', $data);
