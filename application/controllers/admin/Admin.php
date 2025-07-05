@@ -1259,13 +1259,17 @@ public function hapus_slides($id)
 
 // METHOD CLIENT
 public function clients() {
-    $data['judul'] = 'Admin - Manajemen clients';
-    $data['clients'] = $this->Clients_model->get_all();
 
     // Ambil flashdata error dan success untuk ditampilkan di view
     $data['error'] = $this->session->flashdata('error');
     $data['success'] = $this->session->flashdata('success');
-
+    
+    $data = [
+        'judul' => 'Admin - Manajemen clients',
+        'username' => $this->session->userdata('username'),
+        'avatar'   => $this->session->userdata('avatar'),
+        'clients' => $this->Clients_model->get_all()
+    ];
     // Load view list galeri
     $this->load->view('admin/head', $data);
     $this->load->view('admin/header', $data);
@@ -1398,7 +1402,10 @@ public function edit_clients($id) {
     // Data untuk view (jika form belum dikirim)
     $data = [
         'judul'    => 'Admin - Edit Client', // Judul halaman
-        'clients'   => $clients,              // Data client yang akan diedit
+        'clients'   => $clients,              // Data client yang akan diedit      
+        'users'    => $users,  // Menambahkan data pengguna
+        'username' => $this->session->userdata('username'),
+        'avatar'   => $this->session->userdata('avatar'),
     ];
 
     // Tampilkan view edit
@@ -1412,7 +1419,7 @@ public function edit_clients($id) {
 
 public function hapus_clients($id)
 {
-    $clients = $this->Clients_model->get_by_id($id);
+    $clients = $this->Clients_model->delete_clients($id);
 
     if (!$clients) {
         $this->session->set_flashdata('error', 'Data clients tidak ditemukan.');
